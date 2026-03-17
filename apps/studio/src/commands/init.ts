@@ -2,83 +2,20 @@ import * as p from "@clack/prompts";
 import chalk from "chalk";
 import ora from "ora";
 import path from "path";
+import { loadRegistry, copyTemplates } from "../core/template-engine.js";
 import { detectProject } from "../core/project-detector.js";
-import { copyTemplates } from "../core/template-engine.js";
 import { createConfig, writeConfig } from "../core/config-manager.js";
 import { setupGitExclude, checkGitignore, setupIdeConfig } from "../core/git-integration.js";
 import { printWelcome } from "../ui/banner.js";
 import { logger } from "../ui/logger.js";
 import type { ProjectProfile } from "../types/config.js";
 
-// All available agents in the bundle
-const ALL_AGENTS = [
-  "enterprise-architect",
-  "tech-lead",
-  "nextjs-expert",
-  "react-performance-guru",
-  "frontend-specialist",
-  "ui-component-architect",
-  "ux-designer",
-  "ui-design-engineer",
-  "accessibility-auditor",
-  "backend-specialist",
-  "api-architect",
-  "database-engineer",
-  "data-layer-specialist",
-  "security-engineer",
-  "penetration-tester",
-  "rn-architect",
-  "rn-performance-expert",
-  "mobile-ux-designer",
-  "qa-engineer",
-  "devops-engineer",
-  "debugger",
-  "seo-specialist",
-  "orchestrator",
-  "product-manager",
-  "project-planner",
-];
-
-// Profile-to-agent mapping (preselected agents per profile)
-const PROFILE_AGENTS: Record<ProjectProfile, string[]> = {
-  "nextjs-fullstack": [
-    "enterprise-architect", "nextjs-expert", "react-performance-guru",
-    "frontend-specialist", "ui-component-architect", "backend-specialist",
-    "api-architect", "database-engineer", "security-engineer",
-    "qa-engineer", "devops-engineer", "debugger", "seo-specialist",
-    "orchestrator", "product-manager",
-  ],
-  "nextjs-frontend": [
-    "nextjs-expert", "react-performance-guru", "frontend-specialist",
-    "ui-component-architect", "ux-designer", "ui-design-engineer",
-    "accessibility-auditor", "qa-engineer", "debugger", "seo-specialist",
-  ],
-  "expo-mobile": [
-    "rn-architect", "rn-performance-expert", "mobile-ux-designer",
-    "frontend-specialist", "backend-specialist", "security-engineer",
-    "qa-engineer", "devops-engineer", "debugger",
-  ],
-  "react-vite": [
-    "frontend-specialist", "react-performance-guru", "ui-component-architect",
-    "ux-designer", "qa-engineer", "debugger",
-  ],
-  "node-api": [
-    "backend-specialist", "api-architect", "database-engineer",
-    "security-engineer", "devops-engineer", "debugger", "product-manager",
-  ],
-  "monorepo": [
-    "enterprise-architect", "tech-lead", "orchestrator", "devops-engineer",
-    "nextjs-expert", "backend-specialist", "security-engineer", "qa-engineer",
-  ],
-  "custom": ALL_AGENTS,
-};
-
-const SLASH_COMMANDS = [
-  "/blueprint", "/create", "/enhance", "/debug",
-  "/audit-security", "/refactor-solid", "/generate-tests",
-  "/generate-e2e", "/deploy", "/perf-audit", "/a11y-audit",
-  "/document", "/orchestrate", "/preview", "/status",
-];
+const registry = loadRegistry();
+const ALL_AGENTS = registry.agents.map((a: { id: string }) => a.id);
+const PROFILE_AGENTS = Object.fromEntries(
+  Object.entries(registry.profiles).map(([key, val]: [string, any]) => [key, val.agents])
+) as Record<ProjectProfile, string[]>;
+const SLASH_COMMANDS = registry.slashCommands;
 
 export async function initCommand(cwd: string = process.cwd()): Promise<void> {
   p.intro(chalk.bold.cyan("Antigravity Studio — Enterprise AI Agent Toolkit"));
@@ -105,16 +42,16 @@ export async function initCommand(cwd: string = process.cwd()): Promise<void> {
   }
 
   // Step 3: Choose installation profile
+  const profileOptions = Object.entries(registry.profiles).map(([id, p]: [string, any]) => ({
+    value: id,
+    label: p.label,
+    hint: p.hint,
+  }));
+  profileOptions.push({ value: "custom", label: "Custom (Choose agents individually)", hint: undefined });
+
   const profile = await p.select({
     message: "Select installation profile:",
-    options: [
-      { value: "nextjs-fullstack", label: "Full Stack (Next.js + Backend + DB)", hint: "recommended" },
-      { value: "nextjs-frontend", label: "Frontend Only (React/Next.js)" },
-      { value: "expo-mobile", label: "Mobile (React Native / Expo)" },
-      { value: "node-api", label: "Backend API (Node.js)" },
-      { value: "monorepo", label: "Monorepo (Turborepo / Nx)" },
-      { value: "custom", label: "Custom (Choose agents individually)" },
-    ],
+    options: profileOptions as any,
     initialValue: projectInfo.profile as ProjectProfile,
   });
 
@@ -129,7 +66,7 @@ export async function initCommand(cwd: string = process.cwd()): Promise<void> {
   if (profile === "custom") {
     const chosen = await p.multiselect({
       message: "Which agents would you like to install?",
-      options: ALL_AGENTS.map((a) => ({ value: a, label: a })),
+      options: ALL_AGENTS.map((a: string) => ({ value: a, label: a })),
       initialValues: PROFILE_AGENTS["nextjs-fullstack"],
       required: true,
     });
@@ -160,7 +97,7 @@ export async function initCommand(cwd: string = process.cwd()): Promise<void> {
 
   const result = await copyTemplates(cwd, {
     include: { agents: selectedAgents },
-  });
+  }, projectInfo);
 
   installSpinner.succeed(
     `${result.copied.length} files installed${result.skipped.length > 0 ? `, ${result.skipped.length} skipped (already exist)` : ""}`

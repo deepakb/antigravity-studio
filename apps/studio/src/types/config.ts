@@ -19,13 +19,15 @@ export type ProjectProfile =
   | "expo-mobile"
   | "react-vite"
   | "node-api"
-  | "monorepo"
+  | "monorepo-root"
+  | "monorepo-package"
   | "custom";
 
 export interface ProjectInfo {
   profile: ProjectProfile;
   name: string;
   hasGit: boolean;
+  isMonorepo: boolean;
   ide: IdeType;
   framework: FrameworkInfo;
 }

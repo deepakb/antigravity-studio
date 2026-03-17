@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { glob } from "glob";
 import { logger } from "../ui/logger.js";
+import Handlebars from "handlebars";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -10,14 +11,25 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  * Returns the absolute path to the bundled templates directory.
  */
 function getTemplatesDir(): string {
-  // logger.info is safer than console.log in this CLI
-  const distPath = path.resolve(__dirname, "../templates/.agent");
-  const srcPath = path.resolve(__dirname, "../../templates/.agent");
+  // In production (bundled), templates are usually in a 'templates' folder next to 'dist'
+  const distPath = path.resolve(__dirname, "../templates");
+  
+  // In monorepo development (apps/studio/src/core/...)
+  const monoRepoSrcPath = path.resolve(__dirname, "../../../packages/templates");
 
   if (fs.existsSync(distPath)) {
     return distPath;
   }
-  return srcPath;
+  return monoRepoSrcPath;
+}
+
+export function loadRegistry(): any {
+  const templatesDir = getTemplatesDir();
+  const registryPath = path.join(templatesDir, "registry.json");
+  if (fs.existsSync(registryPath)) {
+    return JSON.parse(fs.readFileSync(registryPath, "utf-8"));
+  }
+  throw new Error(`Registry not found at ${registryPath}`);
 }
 
 interface CopyOptions {
@@ -47,12 +59,15 @@ export interface CopyResult {
 
 /**
  * Copies selected templates into the target project's .agent/ folder.
+ * Uses Handlebars to inject context into .md and .ts files.
  */
 export async function copyTemplates(
   targetDir: string,
-  options: CopyOptions = {}
+  options: CopyOptions = {},
+  context: any = {}
 ): Promise<CopyResult> {
-  const srcDir = getTemplatesDir();
+  const templatesDir = getTemplatesDir();
+  const srcDir = path.join(templatesDir, ".agent");
   const destDir = path.join(targetDir, ".agent");
   const result: CopyResult = { 
     copied: [], 
@@ -115,10 +130,52 @@ export async function copyTemplates(
 
     if (!options.dryRun) {
       await fs.ensureDir(path.dirname(destPath));
-      await fs.copy(srcPath, destPath, { overwrite: options.force ?? false });
+      
+      const isTemplate = relPath.endsWith(".md") || relPath.endsWith(".ts");
+      
+      if (isTemplate) {
+        let content = await fs.readFile(srcPath, "utf-8");
+        
+        // Safely inject context variables using regex to avoid Handlebars/JSX conflicts
+        // Supports: {{name}}, {{profile}}, {{ide}}, {{framework.name}}, etc.
+        const replacements: Record<string, string> = {
+          name: context.name || "",
+          profile: context.profile || "",
+          ide: context.ide || "",
+          "framework.name": context.framework?.name || "",
+          timestamp: new Date().toISOString(),
+        };
+
+        for (const [key, value] of Object.entries(replacements)) {
+          const regex = new RegExp(`{{\\s*${key.replace(".", "\\.")}\\s*}}`, "g");
+          content = content.replace(regex, value);
+        }
+
+        await fs.writeFile(destPath, content);
+      } else {
+        await fs.copy(srcPath, destPath, { overwrite: options.force ?? false });
+      }
     }
     
     result.copied.push(relPath);
+  }
+
+  if (!options.dryRun && result.installed.skills.length > 0) {
+    const skillsManifestPath = path.join(destDir, "skills.json");
+    try {
+      await fs.ensureDir(path.dirname(skillsManifestPath));
+      await fs.writeJson(skillsManifestPath, {
+        project: context.name,
+        profile: context.profile,
+        updatedAt: new Date().toISOString(),
+        skills: result.installed.skills.map(id => ({
+          id,
+          path: `./skills/${id}`
+        }))
+      }, { spaces: 2 });
+    } catch (e) {
+      console.error("Failed to write skills manifest:", e);
+    }
   }
 
   return result;

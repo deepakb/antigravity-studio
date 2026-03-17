@@ -5,6 +5,9 @@ package-lock.json
 # Build outputs
 dist/
 *.tsbuildinfo
+.turbo/
+.next/
+out/
 
 # IDE / Editor
 .vscode/
@@ -22,6 +25,7 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 *.log
 
 # Environment / Secrets
@@ -32,3 +36,6 @@ yarn-error.log*
 # Tests / Coverage
 coverage/
 .vitest-results/
+
+# Deployment
+.vercel/

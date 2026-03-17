@@ -54,6 +54,9 @@ export async function detectProject(cwd: string = process.cwd()): Promise<Projec
   const hasVite = has("vite") || hasFile("vite.config.ts") || hasFile("vite.config.js") || hasFile("vite.config.mjs");
   const hasExpo = has("expo") || has("react-native") || hasFile("app.json") && (readFileSync(path.join(cwd, "app.json"), "utf8").includes("expo") || readFileSync(path.join(cwd, "app.json"), "utf8").includes("react-native"));
 
+  const isMonorepoRoot = hasFile("turbo.json") || hasFile("pnpm-workspace.yaml") || hasFile("nx.json");
+  const isMonorepoPackage = !isMonorepoRoot && (cwd.includes(`${path.sep}apps${path.sep}`) || cwd.includes(`${path.sep}packages${path.sep}`));
+
   if (hasNext) {
     framework.name = "Next.js";
     if (deps["next"]) framework.version = deps["next"];
@@ -73,9 +76,12 @@ export async function detectProject(cwd: string = process.cwd()): Promise<Projec
   } else if (hasVite && has("react")) {
     framework.name = "React + Vite";
     profile = "react-vite";
-  } else if (hasFile("turbo.json") || hasFile("pnpm-workspace.yaml") || hasFile("apps") || hasFile("packages")) {
-    framework.name = "Monorepo";
-    profile = "monorepo";
+  } else if (isMonorepoRoot) {
+    framework.name = "Monorepo (Root)";
+    profile = "monorepo-root";
+  } else if (isMonorepoPackage) {
+    framework.name = "Monorepo (Package)";
+    profile = "monorepo-package";
   } else if (has("express") || has("fastify") || has("hono") || hasFile("server.js") || hasFile("src/server.ts")) {
     framework.name = "Node.js API";
     profile = "node-api";
@@ -83,8 +89,9 @@ export async function detectProject(cwd: string = process.cwd()): Promise<Projec
 
   const hasGit = hasFile(".git");
   const ide = detectIde(cwd);
+  const isMonorepo = isMonorepoRoot || isMonorepoPackage;
 
-  return { profile, name: projectName, hasGit, ide, framework };
+  return { profile, name: projectName, hasGit, isMonorepo, ide, framework };
 }
 
 function detectIde(cwd: string): IdeType {

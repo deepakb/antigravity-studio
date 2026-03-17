@@ -7,6 +7,8 @@ import { printBanner } from "./ui/banner.js";
 import { initCommand } from "./commands/init.js";
 import { statusCommand } from "./commands/status.js";
 import { validateCommand } from "./commands/validate.js";
+import { doctorCommand } from "./commands/doctor.js";
+import { listCommand } from "./commands/list.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -50,13 +52,30 @@ program
     await statusCommand(process.cwd());
   });
 
+// ─── list ─────────────────────────────────────────────────────────────────
+program
+  .command("list")
+  .description("List available architectural profiles and specialized agents")
+  .action(async () => {
+    await listCommand(process.cwd());
+  });
+
+// ─── doctor ───────────────────────────────────────────────────────────────
+program
+  .command("doctor")
+  .description("Check workspace health and configuration integrity")
+  .action(async () => {
+    await doctorCommand(process.cwd());
+  });
+
 // ─── validate ─────────────────────────────────────────────────────────────
 program
   .command("validate")
   .description("Run all enterprise quality gate validation scripts")
   .option("--skip-e2e", "Skip slow Playwright end-to-end tests", false)
   .option("--fix", "Auto-fix issues where possible (ESLint --fix)", false)
-  .action(async (opts: { skipE2e: boolean; fix: boolean }) => {
+  .option("--all", "Run validation across all packages in a monorepo", false)
+  .action(async (opts: { skipE2e: boolean; fix: boolean; all: boolean }) => {
     await validateCommand(process.cwd(), opts);
   });
 

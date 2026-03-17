@@ -1,0 +1,70 @@
+{
+  "name": "@antigravity/studio",
+  "version": "1.0.0",
+  "description": "Enterprise AI Agent Toolkit for TypeScript CLI",
+  "author": "Deepak Biswal",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "studio": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/cli.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "release": "changeset publish"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^11.0.0",
+    "handlebars": "^4.7.8",
+    "ora": "^8.1.0",
+    "semver": "^7.6.3"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.10",
+    "@types/fs-extra": "^11.0.4",
+    "@types/handlebars": "^4.1.0",
+    "@types/node": "^22.0.0",
+    "@types/semver": "^7.5.8",
+    "eslint": "^9.18.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "cli",
+    "enterprise",
+    "typescript",
+    "nextjs",
+    "react"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deepakbiswal/antigravity-studio.git"
+  }
+}

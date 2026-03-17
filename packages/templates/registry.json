@@ -1,0 +1,97 @@
+{
+  "agents": [
+    { "id": "enterprise-architect", "name": "Enterprise Architect", "category": "Architecture & Leadership" },
+    { "id": "tech-lead", "name": "Tech Lead", "category": "Architecture & Leadership" },
+    { "id": "nextjs-expert", "name": "Next.js Expert", "category": "Frontend (Web)" },
+    { "id": "react-performance-guru", "name": "React Performance Guru", "category": "Frontend (Web)" },
+    { "id": "frontend-specialist", "name": "Frontend Specialist", "category": "Frontend (Web)" },
+    { "id": "ui-component-architect", "name": "UI Component Architect", "category": "Frontend (Web)" },
+    { "id": "ux-designer", "name": "UX Designer", "category": "UX/UI Design" },
+    { "id": "ui-design-engineer", "name": "UI Design Engineer", "category": "UX/UI Design" },
+    { "id": "accessibility-auditor", "name": "Accessibility Auditor", "category": "UX/UI Design" },
+    { "id": "backend-specialist", "name": "Backend Specialist", "category": "Backend & API" },
+    { "id": "api-architect", "name": "API Architect", "category": "Backend & API" },
+    { "id": "database-engineer", "name": "Database Engineer", "category": "Backend & API" },
+    { "id": "data-layer-specialist", "name": "Data Layer Specialist", "category": "Backend & API" },
+    { "id": "security-engineer", "name": "Security Engineer", "category": "Security" },
+    { "id": "penetration-tester", "name": "Penetration Tester", "category": "Security" },
+    { "id": "rn-architect", "name": "React Native Architect", "category": "Mobile" },
+    { "id": "rn-performance-expert", "name": "React Native Performance Expert", "category": "Mobile" },
+    { "id": "mobile-ux-designer", "name": "Mobile UX Designer", "category": "Mobile" },
+    { "id": "qa-engineer", "name": "QA Engineer", "category": "Quality & Ops" },
+    { "id": "devops-engineer", "name": "DevOps Engineer", "category": "Quality & Ops" },
+    { "id": "debugger", "name": "Debugger", "category": "Quality & Ops" },
+    { "id": "seo-specialist", "name": "SEO Specialist", "category": "Marketing" },
+    { "id": "orchestrator", "name": "Orchestrator", "category": "Architecture & Leadership" },
+    { "id": "product-manager", "name": "Product Manager", "category": "Architecture & Leadership" },
+    { "id": "project-planner", "name": "Project Planner", "category": "Architecture & Leadership" },
+    { "id": "ai-engineer", "name": "AI Engineer", "category": "AI & Innovation" },
+    { "id": "prompt-engineer", "name": "Prompt Engineer", "category": "AI & Innovation" },
+    { "id": "llm-security-officer", "name": "LLM Security Officer", "category": "AI & Innovation" }
+  ],
+  "profiles": {
+    "nextjs-fullstack": {
+      "label": "Full Stack (Next.js + Backend + DB)",
+      "hint": "recommended",
+      "agents": [
+        "enterprise-architect", "nextjs-expert", "react-performance-guru",
+        "frontend-specialist", "ui-component-architect", "backend-specialist",
+        "api-architect", "database-engineer", "security-engineer",
+        "qa-engineer", "devops-engineer", "debugger", "seo-specialist",
+        "orchestrator", "product-manager"
+      ]
+    },
+    "nextjs-frontend": {
+      "label": "Frontend Only (React/Next.js)",
+      "agents": [
+        "nextjs-expert", "react-performance-guru", "frontend-specialist",
+        "ui-component-architect", "ux-designer", "ui-design-engineer",
+        "accessibility-auditor", "qa-engineer", "debugger", "seo-specialist"
+      ]
+    },
+    "expo-mobile": {
+      "label": "Mobile (React Native / Expo)",
+      "agents": [
+        "rn-architect", "rn-performance-expert", "mobile-ux-designer",
+        "frontend-specialist", "backend-specialist", "security-engineer",
+        "qa-engineer", "devops-engineer", "debugger"
+      ]
+    },
+    "react-vite": {
+      "label": "React + Vite",
+      "agents": [
+        "frontend-specialist", "react-performance-guru", "ui-component-architect",
+        "ux-designer", "qa-engineer", "debugger"
+      ]
+    },
+    "node-api": {
+      "label": "Backend API (Node.js)",
+      "agents": [
+        "backend-specialist", "api-architect", "database-engineer",
+        "security-engineer", "devops-engineer", "debugger", "product-manager"
+      ]
+    },
+    "monorepo-root": {
+      "label": "Monorepo Workspace Root",
+      "hint": "Orchestration & DevOps only",
+      "agents": [
+        "enterprise-architect", "tech-lead", "orchestrator", "devops-engineer",
+        "project-planner", "security-engineer", "qa-engineer"
+      ]
+    },
+    "monorepo-package": {
+      "label": "Monorepo Sub-Package",
+      "hint": "Specialized specialists",
+      "agents": [
+        "nextjs-expert", "backend-specialist", "ui-component-architect",
+        "database-engineer", "qa-engineer", "debugger"
+      ]
+    }
+  },
+  "slashCommands": [
+    "/blueprint", "/create", "/enhance", "/debug",
+    "/audit-security", "/refactor-solid", "/generate-tests",
+    "/generate-e2e", "/deploy", "/perf-audit", "/a11y-audit",
+    "/document", "/orchestrate", "/preview", "/status"
+  ]
+}
