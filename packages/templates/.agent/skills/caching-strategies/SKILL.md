@@ -1,119 +1,38 @@
-# SKILL: Caching Strategies
+---
+name: caching-strategies
+description: "Strategic Multi-layer Caching for high-performance enterprise applications. Focuses on Memory, Cloud (Redis), and Edge (CDN) caching."
+---
+
+# SKILL: Enterprise Caching Strategies
 
 ## Overview
-Multi-layer caching patterns for Next.js 15 applications using React cache, fetch cache, unstable_cache, and Redis (Upstash). Load when designing data fetching or improving performance.
+Strategic **Multi-layer Caching** for high-performance enterprise applications. Focuses on **Memory**, **Cloud (Redis)**, and **Edge (CDN)** caching.
 
-## Next.js 15 Caching Model (Simplified)
-```
-Request → Next.js Server
-  ↓
-  1. Request Memoization (React cache) — per-request dedup
-  2. Data Cache (fetch/unstable_cache) — persistent across requests
-  3. Full Route Cache — pre-rendered static pages
-  4. Router Cache — client-side navigation cache
-```
+## 1. Cache-Aside Pattern (Distributed)
+The primary pattern for data-heavy applications.
+- **Logic**: Check Cache → If Hit, return → If Miss, fetch from DB, update Cache, then return.
+- **Tooling**: Use `Redis` or `KeyDB` for low-latency, shared caching across server instances.
 
-## Layer 1: Request Memoization (React cache)
-```typescript
-// Deduplicates identical DB calls within one request
-import { cache } from 'react';
-import { db } from '@/lib/db';
+## 2. Cache Invalidation Strategies
+A stale cache is worse than no cache.
+- **TTL (Time-To-Live)**: Set short TTLs for high-volatility data.
+- **Tag-based Revalidation**: Next.js 15 `revalidateTag` — invalidate specific data groups across the whole app.
+- **Write-Through**: Update the cache at the same time as the database.
 
-export const getUser = cache(async (id: string) => {
-  return db.user.findUnique({ where: { id } });
-});
+## 3. CDN & Edge Caching (Next.js/Vercel)
+Cache static content and ISR pages close to the user.
+- **Stale-While-Revalidate**: Serve stale data quickly while updating the background cache.
+- **Cache-Control Headers**: Set `s-maxage` for CDN and `maxage` for browser cache.
 
-// ✅ This is called 3 times in one request but only executes ONCE
-// In Layout → calls getUser(userId)
-// In Header → calls getUser(userId)
-// In Page → calls getUser(userId)
-// → Database hit: 1 (React cache deduplicates)
-```
+## 4. Thundering Herd Avoidance
+Prevent 1000 simultaneous requests from hitting the DB at once on a cache miss.
+- **Locking**: The first request "locks" the key, fetches the data, and updates the cache. Other requests wait or receive the stale value.
 
-## Layer 2: Data Cache (unstable_cache)
-```typescript
-// Persists across requests — like Redis but built-in
-import { unstable_cache } from 'next/cache';
+## 5. Memory Caching (Next.js Request Cache)
+In Next.js 15, `React.cache()` caches data per-request.
+- **Benefit**: No need to pass props down 10 levels; just fetch the same data twice in two components — Next.js will only call the DB/API once.
 
-export const getPopularPosts = unstable_cache(
-  async () => {
-    return db.post.findMany({ orderBy: { viewCount: 'desc' }, take: 10 });
-  },
-  ['popular-posts'],          // Cache key
-  {
-    revalidate: 3600,         // Seconds until stale (1 hour)
-    tags: ['posts', 'popular-posts'],  // Tags for on-demand revalidation
-  }
-);
-
-// Invalidate on-demand (e.g., after new post created)
-import { revalidateTag, revalidatePath } from 'next/cache';
-revalidateTag('posts');           // Invalidate by tag
-revalidatePath('/blog');          // Invalidate by path
-```
-
-## Layer 3: fetch() Cache
-```typescript
-// In Server Components and Route Handlers
-// ✅ Cached (default in Next.js — persists across requests)
-const data = await fetch('https://api.example.com/posts', {
-  next: { revalidate: 3600, tags: ['posts'] }
-});
-
-// ✅ No cache (for real-time data or POST requests)
-const data = await fetch('https://api.example.com/posts', {
-  cache: 'no-store'
-});
-```
-
-## Layer 4: Redis with Upstash
-```typescript
-// lib/redis.ts
-import { Redis } from '@upstash/redis';
-export const redis = Redis.fromEnv(); // UPSTASH_REDIS_REST_URL + TOKEN
-
-// Generic cache wrapper
-export async function withCache<T>(
-  key: string,
-  ttl: number,
-  fetcher: () => Promise<T>
-): Promise<T> {
-  const cached = await redis.get<T>(key);
-  if (cached !== null) return cached;
-  const data = await fetcher();
-  await redis.setex(key, ttl, JSON.stringify(data));
-  return data;
-}
-
-// Cache invalidation helpers
-export async function invalidatePattern(pattern: string) {
-  const keys = await redis.keys(pattern);
-  if (keys.length > 0) await redis.del(...keys);
-}
-
-// Usage
-const stats = await withCache(
-  `user:${userId}:stats`,
-  300, // 5 minutes
-  () => computeUserStats(userId)
-);
-```
-
-## Cache Strategy Decision Guide
-| Data Type | Freshness Need | Solution |
-|---|---|---|
-| User profile | Medium (minutes) | `unstable_cache` + revalidateTag on update |
-| Posts list | Low (hours) | `unstable_cache` with 1h revalidate |
-| Current user | High (per request) | `react cache` (no persistence) |
-| Real-time data | Very high | `cache: 'no-store'` |
-| Session | Per-request | `auth()` → NextAuth handles this |
-| Computed stats | Medium | Redis with 5min TTL |
-| Popular content | Low | Redis with 1h TTL + cron revalidation |
-
-## Edge Caching (CDN)
-```typescript
-// Route Segments can set cache headers for CDN
-export const revalidate = 3600; // Cache this page for 1 hour at CDN
-export const dynamic = 'force-static'; // Always statically generate
-export const runtime = 'edge'; // Run at CDN edge
-```
+## Skills to Load
+- `redis-distributed-caching`
+- `cdn-edge-optimization`
+- `stale-while-revalidate-swr`

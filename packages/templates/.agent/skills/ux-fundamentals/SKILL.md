@@ -1,80 +1,34 @@
-# SKILL: UX Fundamentals
+---
+name: ux-fundamentals
+description: "Principal-level UX & Product Design standards. Focuses on Aesthetic Integrity, Cognitive Load, and Micro-interactions."
+---
+
+# SKILL: Enterprise UX Fundamentals
 
 ## Overview
-Evidence-based UX principles and decision frameworks that apply to enterprise TypeScript applications. Load when designing user flows, evaluating UI patterns, or planning new features.
+Principal-level **UX & Product Design** standards. Focuses on **Aesthetic Integrity**, **Cognitive Load**, and **Micro-interactions**.
 
-## The UX Laws Applied
+## 1. The 10-Second Impression (Visual Hierarchy)
+- **LCP Optimization**: The hero section must be visually perfect and functional within 3 seconds.
+- **Scanning**: Use high-contrast headers and meaningful whitespace to support "F-pattern" reading.
 
-### Hick's Law: Reduce Decision Count
-> Time to make a decision increases logarithmically with the number of options.
-```
-✅ Navigation: 5-7 items max (7 ± 2 — Miller's Law)
-✅ Filter options: Show top 5, then "More filters" disclosure
-✅ Onboarding: 1 primary CTA per screen, not 3 equal buttons
-✅ Forms: Progressive disclosure — show advanced options behind "Advanced Settings"
-```
+## 2. Cognitive Load Management
+- **Progressive Disclosure**: Only show the user what they need *now*. Hide advanced settings in collapsible sections or sub-pages.
+- **Feedback Loops**: Every interaction (click, drag, upload) MUST show an immediate visual state change (Loading, Success, or Error).
 
-### Fitts' Law: Targets Must Be Big & Close
-```tsx
-// ✅ Primary actions: large targets, within thumb zone (mobile bottom 45%)
-// ✅ Destructive actions: small, far from primary action, require confirmation
-// ✅ Related actions grouped: don't make user move cursor across screen
+## 3. Anticipatory Design
+- **Defaulting**: Provide smart defaults for forms and settings based on standard user behavior.
+- **Error Prevention**: Use "Confirmation Dialogs" for destructive actions (Delete, Wipe) but allow "Undo" for non-destructive ones.
 
-// Minimum touch targets (mobile)
-const touchTargetStyles = 'min-h-[44px] min-w-[44px]'; // iOS HIG
-// Android: 48×48dp minimum
-```
+## 4. Typography & Color Systems
+- **Vertical Rhythm**: Use a consistent spacing scale (e.g., multiples of 4px or 8px).
+- **Contrast**: Maintain AA/AAA contrast ratios for all text. Use typography to denote hierarchy (size, weight, letter-spacing).
 
-### Jakob's Law: Meet User Expectations
-> Users spend most of their time on OTHER sites — design to their expectations.
-```
-✅ Logo: top-left, links home
-✅ Search: top-right or top-center
-✅ Primary navigation: horizontal top (desktop) or bottom tab bar (mobile)
-✅ Form submit: bottom of form, right-aligned
-✅ Destructive action: red, requires confirmation
-```
+## 5. Motion as Communication
+- **Functional Motion**: Use animations to explain *where an object came from* and *where it went*.
+- **Restraint**: Never animate "just because". Every move must serve a purpose (Focus, Feedback, or Flow).
 
-### Miller's Law: Cognitive Load Limits
-> Working memory holds 7 ± 2 items at once.
-```tsx
-// ✅ Group related fields (address fields in one "Address" section)
-// ✅ Chunk long content (< 5 items per list group before "Show more")
-// ✅ Show progress for multi-step flows (Step 1 of 4)
-// ✅ Pre-fill known information (country from IP, email from session)
-```
-
-## The 5 States Every UI Must Handle
-```tsx
-// Every interactive component needs ALL 5:
-type ComponentState = 'idle' | 'loading' | 'success' | 'empty' | 'error';
-
-// 1. IDLE — default, waiting for interaction
-// 2. LOADING — data is fetching (skeleton > spinner for large areas)
-// 3. EMPTY — no data exists (never show a blank page — add illustration + CTA)
-// 4. ERROR — something failed (actionable error with retry button)
-// 5. PARTIAL — data exists but is incomplete
-
-function DataView({ status }: { status: ComponentState }) {
-  if (status === 'loading') return <Skeleton />;
-  if (status === 'empty') return <EmptyState title="No posts yet" action="Create your first post" />;
-  if (status === 'error') return <ErrorState message="Failed to load" onRetry={refetch} />;
-  return <DataList />;
-}
-```
-
-## Feedback & Response Time
-| Response Time | User Perception | Solution |
-|---|---|---|
-| < 100ms | Instant — no feedback needed | — |
-| 100ms – 1s | Slight delay — simple indicator ok | `isLoading` button state |
-| 1s – 10s | User waits — show progress | Spinner + message |
-| > 10s | User thinks it's broken | Progress bar + allow cancellation |
-
-## Micro-Interaction Checklist
-- [ ] Button shows loading state + disabled during submit
-- [ ] Form fields show real-time validation (on blur, not keystroke)
-- [ ] Destructive actions require confirmation (2-step)
-- [ ] Success states self-dismiss after 3–5 seconds (toasts)
-- [ ] Error states persist until manually dismissed
-- [ ] Navigation transitions smooth (> 200ms but < 400ms)
+## Skills to Load
+- `design-tokens-governance`
+- `accessibility-wcag`
+- `framer-motion-choreography`

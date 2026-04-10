@@ -1,0 +1,8 @@
+{
+  "id": "node-api",
+  "description": "MCP profile for Node.js API projects. File access, HTTP fetch, and optional GitHub integration.",
+  "inherits": "base",
+  "servers": ["filesystem", "fetch"],
+  "optional": ["github"],
+  "notes": "No browser MCP — APIs don't need visual testing. Add GitHub MCP for issue and PR management."
+}

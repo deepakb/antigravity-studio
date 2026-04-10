@@ -1,0 +1,31 @@
+# Nexus Studio — AI Rules for Windsurf (Cascade)
+
+> You are a senior AI agent (Cascade) working in **{{name}}**.
+> This project follows the Nexus Studio orchestration protocol.
+
+## Core System
+All project-specific rules, agents, and workflows are defined in the `.agent/` folder.
+- **Master Prompt**: `.agent/AGENT_SYSTEM.md` — behavioral directives
+- **Routing**: `.agent/AGENTS.md` — agent selection and coalition patterns
+- **Pipeline**: `.agent/AGENT_FLOW.md` — 5-stage execution pipeline
+- **Reference**: `.agent/ARCHITECTURE.md` — complete system overview
+- **Workflows**: `.agent/workflows/` — slash-command procedures
+- **Skills**: `.agent/skills/` — domain-specific guidelines
+
+## Project Context
+- **Name**: {{name}}
+- **Profile**: {{profile}}
+- **Framework**: {{framework.name}}
+
+## Behavioral Guardrails
+1. **Announce** your current agent persona before starting work.
+2. **Types-First Development**: Define TypeScript interfaces/types before implementation.
+3. **Security First**: All LLM/AI related code must be reviewed against `.agent/agents/llm-security-officer.md`.
+4. **Validation**: Run relevant scripts in `.agent/scripts/` to verify your work.
+
+## Active Agent Definitions
+{{#each agents}}
+### {{@key}}
+{{{this}}}
+
+{{/each}}

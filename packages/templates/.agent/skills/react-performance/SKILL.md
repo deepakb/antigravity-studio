@@ -1,111 +1,41 @@
-# SKILL: React Performance
+---
+name: react-performance
+description: "Hardened, data-driven Performance Auditing for React/Next.js applications. Focuses on Bundle Optimization, Render Profiling, and LCP Orchestration."
+---
+
+# SKILL: Enterprise React Performance
 
 ## Overview
-Focused React performance patterns — profiling tools, memoization decisions, concurrent features, and bundle optimization. Load when diagnosing slow UIs or optimizing rendering.
+Hardened, data-driven **Performance Auditing** for React/Next.js applications. Focuses on **Bundle Optimization**, **Render Profiling**, and **LCP Orchestration**.
 
-## Profiling First
-```
-Before optimizing ANYTHING, measure:
-1. Open React DevTools → Profiler tab
-2. Record interaction → find components with long render bars
-3. Enable "Highlight updates" (blue flash = render)
-4. Run: why-did-you-render for detailed logs
-```
+## 1. Bundle & Dependency Auditing
+Don't ship what you don't use.
+- **Audit**: Use `@next/bundle-analyzer` to identify bloated libraries.
+- **Standard**: No client-side library > 50kb without justification.
+- **Replacement**: Swap heavy libs (e.g., `moment` → `date-fns`, `lodash` → `native ES6`).
 
-## Memoization Decision Tree
-```
-Should I use React.memo?
-  → Does parent re-render frequently?     NO  → skip
-  → Do the props actually change often?   YES → skip  
-  → Is the component expensive to render? NO  → skip
-  All YES above? → Add React.memo
+## 2. LCP & Core Web Vitals (CWV)
+Monitor the real user experience.
+- **Image Priority**: Use `priority` on the Largest Contentful Paint (LCP) image.
+- **Font Optimization**: Use `next/font` with `display: swap` to prevent layout shifts.
+- **Dynamic Imports**: Use `dynamic(() => import(...), { ssr: false })` for components below the fold.
 
-Should I use useMemo?
-  → Is the calculation expensive (> 5ms)? NO  → skip
-  → Is the result used in deps array?     YES → add useMemo
-  → Is it in a hot render path?           NO  → skip
+## 3. Render Profiling & Memoization
+- **React Profiler**: Use the DevTools Profiler to find "Wasted Renders".
+- **Rule**: If a component renders > 10 times in a single interaction, investigate `memo` or `useMemo`.
+- **Logic Offloading**: Move heavy filtering or data transformation into the **Server Component** layer to save client CPU.
 
-Should I use useCallback?
-  → Is the function passed to a memoized child? NO → skip
-  → Is it in a dependency array?               YES → add useCallback
-```
+## 4. Network Optimization (Streaming)
+- **Suspense Boundaries**: Wrap slow fetching areas in `<Suspense>`.
+- **Pre-loading**: Use `<Link prefetch>` for high-probability navigation paths.
+- **Parallel Fetching**: Fetch data in parallel using `Promise.all()` in Server Components.
 
-## Stable Reference Patterns
-```typescript
-// ❌ Creates new array/object every render → breaks memo
-function ParentComponent() {
-  const filters = { status: 'active', page: 1 };  // New object!
-  return <FilteredList filters={filters} />;       // Child ALWAYS re-renders
-}
+## 5. Interaction to Next Paint (INP)
+Next.js 15 focuses on responsiveness.
+- **Pattern**: Break up long-running JS tasks into small chunks using `requestIdleCallback` or `Scheduler.postTask`.
+- **Debouncing**: Always debounce/throttle high-frequency events like `scroll`, `resize`, or `onSearchChange`.
 
-// ✅ Stable reference with useMemo
-function ParentComponent() {
-  const [status, setStatus] = useState('active');
-  const filters = useMemo(() => ({ status, page: 1 }), [status]);
-  return <FilteredList filters={filters} />;
-}
-```
-
-## Expensive List Virtualization
-```tsx
-// For ANY list > 50 items — virtualize (only renders visible items)
-import { FixedSizeList } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
-
-function VirtualList({ items }: { items: Item[] }) {
-  return (
-    <AutoSizer>
-      {({ height, width }) => (
-        <FixedSizeList
-          height={height}
-          width={width}
-          itemCount={items.length}
-          itemSize={60}              // Row height in px (must be known)
-        >
-          {({ index, style }) => (
-            <div style={style}>     {/* MUST pass style for positioning */}
-              <ItemRow item={items[index]!} />
-            </div>
-          )}
-        </FixedSizeList>
-      )}
-    </AutoSizer>
-  );
-}
-```
-
-## Code Splitting
-```tsx
-// Route-level splitting (Next.js does this automatically)
-// Component-level splitting for heavy features:
-import dynamic from 'next/dynamic';
-
-// ✅ Split chart libraries (recharts, d3 etc.)
-const RevenueChart = dynamic(() => import('./charts/RevenueChart'), {
-  loading: () => <Skeleton className="h-64 w-full" />,
-  ssr: false,  // Charts often need browser APIs
-});
-
-// ✅ Split heavy editor components
-const RichTextEditor = dynamic(() => import('./RichTextEditor'), {
-  loading: () => <Textarea placeholder="Loading editor..." />,
-  ssr: false,
-});
-```
-
-## React 18 Concurrent APIs
-```tsx
-// useTransition — keep input responsive during expensive state updates
-const [isPending, startTransition] = useTransition();
-
-// Fast update (immediate): update search input
-setValue(e.target.value);
-
-// Deferred update (interruptible): filter list
-startTransition(() => setFilteredItems(filter(allItems, value)));
-
-// useDeferredValue — defer re-renders without setTiming
-const deferredQuery = useDeferredValue(searchQuery);
-// deferredQuery lags behind searchQuery — OK for derived computed lists
-const results = useMemo(() => search(allPosts, deferredQuery), [allPosts, deferredQuery]);
-```
+## Skills to Load
+- `nextjs-perf-optimization`
+- `core-web-vitals`
+- `bundle-analysis-strategies`

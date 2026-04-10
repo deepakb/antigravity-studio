@@ -1,0 +1,10 @@
+{
+  "id": "local",
+  "description": "Local development environment overrides. Playwright runs with a visible browser window for easy debugging.",
+  "overrides": {
+    "playwright": {
+      "args": ["@playwright/mcp@latest"],
+      "notes": "Headed mode — browser window is visible during local development."
+    }
+  }
+}

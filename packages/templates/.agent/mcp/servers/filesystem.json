@@ -1,0 +1,17 @@
+{
+  "id": "filesystem",
+  "label": "Filesystem MCP",
+  "description": "Gives AI agents read/write access to project files with sandboxed path restrictions.",
+  "credentialTier": "none",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-filesystem", "${PROJECT_ROOT}"],
+  "env": {},
+  "capabilities": [
+    "file-read",
+    "file-write",
+    "directory-listing",
+    "file-search"
+  ],
+  "profiles": ["react-vite", "nextjs", "node-api", "python-fastapi"],
+  "notes": "Zero-config. PROJECT_ROOT is automatically resolved to the workspace root at runtime."
+}

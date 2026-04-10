@@ -1,0 +1,9 @@
+{
+  "id": "windsurf",
+  "description": "Windsurf (Cascade) MCP format adapter. Output key is 'mcpServers', written to .windsurf/mcp.json.",
+  "outputKey": "mcpServers",
+  "requiresType": false,
+  "destination": ".windsurf/mcp.json",
+  "envStyle": "object",
+  "notes": "Windsurf uses 'mcpServers'. Same structure as Cursor and Claude."
+}

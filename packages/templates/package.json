@@ -1,7 +1,8 @@
 {
-  "name": "@antigravity/templates",
+  "name": "@nexus/templates",
   "version": "1.0.0",
   "private": true,
+  "description": "Nexus Studio agent templates — single source of truth for all agents, skills, scripts, workflows, and MCP configs. Never edit apps/studio/templates/ directly.",
   "files": [
     ".agent",
     "registry.json"

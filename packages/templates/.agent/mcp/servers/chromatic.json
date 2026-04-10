@@ -1,0 +1,31 @@
+{
+  "id": "chromatic",
+  "label": "Chromatic Visual Testing MCP",
+  "description": "Triggers Chromatic visual regression tests, captures component snapshots, and reports UI changes.",
+  "credentialTier": "required",
+  "command": "npx",
+  "args": ["-y", "@chromatic/mcp@latest"],
+  "env": {
+    "CHROMATIC_PROJECT_TOKEN": "${CHROMATIC_PROJECT_TOKEN}"
+  },
+  "credentials": {
+    "CHROMATIC_PROJECT_TOKEN": {
+      "description": "Chromatic project token for visual testing",
+      "howToGet": "https://www.chromatic.com/docs/cli#project-tokens",
+      "required": true,
+      "placeholder": "chpt_xxxxxxxxxxxxxxxxxxxx"
+    }
+  },
+  "capabilities": {
+    "withCredentials": [
+      "visual-regression",
+      "storybook-snapshot",
+      "ui-review",
+      "component-diff",
+      "baseline-management"
+    ],
+    "withoutCredentials": []
+  },
+  "profiles": ["react-vite", "nextjs"],
+  "notes": "Fully disabled without CHROMATIC_PROJECT_TOKEN. Create a free account at chromatic.com to get a token."
+}

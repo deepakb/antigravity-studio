@@ -1,182 +1,41 @@
-# SKILL: i18n & Localization
+---
+name: i18n-localization
+description: "Standards for Internationalization (i18n) in multi-market enterprise apps. Focuses on Type-safety, Pluralization, and RTL Support."
+---
+
+# SKILL: Enterprise i18n & Localization
 
 ## Overview
-Internationalization patterns for **Next.js 15** using **next-intl** — the most mature i18n solution for App Router. Load when adding multi-language support.
+Standards for **Internationalization (i18n)** in multi-market enterprise apps. Focuses on **Type-safety**, **Pluralization**, and **RTL Support**.
 
-## Setup (next-intl)
-```bash
-npm install next-intl
-```
+## 1. Type-safe Translations
+Never use raw strings in the UI.
+- **Pattern**: Use `next-intl` or `i18next` with TypeScript definitions generated from your JSON locale files.
+- **Benefit**: Red squiggly lines in the IDE if a translation key is missing or mistyped.
 
-```typescript
-// middleware.ts — route users by locale
-import createMiddleware from 'next-intl/middleware';
-export default createMiddleware({
-  locales: ['en', 'fr', 'de', 'ja', 'ar'],  // Supported locales
-  defaultLocale: 'en',
-  localePrefix: 'always',    // URLs: /en/... /fr/... /de/...
-  // Or: 'as-needed' to omit default locale from URL
-});
-export const config = { matcher: ['/((?!api|_next|.*\\..*).*)'] };
-```
+## 2. Pluralization & Interpolation
+- **Plural**: Use ICU message format (`{count, plural, =0 {no items} one {1 item} other {# items}}`).
+- **Interpolation**: Safely inject dynamic values (names, dates) without breaking the translation flow.
 
-## File Structure
-```
-messages/
-  en.json
-  fr.json
-  de.json
-  ja.json
-app/
-  [locale]/
-    layout.tsx              ← Locale layout (font, dir, locale provider)
-    page.tsx
-    blog/
-      page.tsx
-      [slug]/
-        page.tsx
-  layout.tsx                ← Root layout (minimal)
-```
+## 3. RTL (Right-to-Left) Infrastructure
+- **Flexbox/Grid**: Use logical properties (`margin-inline-start` instead of `margin-left`).
+- **Mirroring**: Ensure the entire layout mirrors correctly for Arabic/Hebrew locales.
 
-## Message Files
-```json
-// messages/en.json
-{
-  "common": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "loading": "Loading...",
-    "error": "Something went wrong"
-  },
-  "auth": {
-    "signin": "Sign in",
-    "signup": "Create account",
-    "signout": "Sign out",
-    "email": "Email address",
-    "password": "Password",
-    "forgotPassword": "Forgot your password?"
-  },
-  "blog": {
-    "post": {
-      "title": "Blog Posts",
-      "readTime": "{minutes} min read",
-      "publishedAt": "Published {date, date, long}",
-      "author": "By {name}"
-    }
-  },
-  "errors": {
-    "notFound": "We couldn't find that page",
-    "unauthorized": "You need to sign in to access this page",
-    "serverError": "Something went wrong on our end. Please try again."
-  }
-}
-```
+## 4. Date & Currency Formatting
+- **Standard**: Always use `Intl.DateTimeFormat` and `Intl.NumberFormat` to respect the user's locale.
+- **Storage**: Store all dates in UTC; convert to the user's local timezone only at the presentation layer.
 
-## Usage in Components
-```tsx
-// Server Component
-import { getTranslations } from 'next-intl/server';
+## 5. Dynamic Routing & SEO
+- **Pattern**: Use the `/en/`, `/fr/` URL structure for better SEO and explicit context.
+- **Headers**: Serve correctly localized `lang` attributes and `hreflang` tags.
 
-export default async function BlogPage() {
-  const t = await getTranslations('blog.post');
-  const posts = await getPosts();
+## Skills to Load
+- `next-intl-patterns`
+- `rtl-layout-strategies`
+- `localized-seo-best-practices`
 
-  return (
-    <section>
-      <h1>{t('title')}</h1>
-      {posts.map(post => (
-        <article key={post.id}>
-          <p>{t('publishedAt', { date: post.createdAt })}</p>
-          <p>{t('readTime', { minutes: post.readingTime })}</p>
-          <p>{t('author', { name: post.author.name })}</p>
-        </article>
-      ))}
-    </section>
-  );
-}
+---
 
-// Client Component
-'use client';
-import { useTranslations } from 'next-intl';
+## Verification Scripts (MANDATORY)
 
-function DeleteButton() {
-  const t = useTranslations('common');
-  return <button>{t('delete')}</button>;
-}
-```
-
-## Locale Layout
-```tsx
-// app/[locale]/layout.tsx
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { notFound } from 'next/navigation';
-
-const supportedLocales = ['en', 'fr', 'de', 'ja', 'ar'];
-
-export default async function LocaleLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  if (!supportedLocales.includes(locale)) notFound();
-
-  const messages = await getMessages();
-
-  return (
-    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>  {/* ← RTL support */}
-      <body>
-        <NextIntlClientProvider messages={messages}>
-          {children}
-        </NextIntlClientProvider>
-      </body>
-    </html>
-  );
-}
-```
-
-## Generating Static Params
-```typescript
-// app/[locale]/page.tsx — generate routes for all locales at build time
-export function generateStaticParams() {
-  return ['en', 'fr', 'de', 'ja', 'ar'].map(locale => ({ locale }));
-}
-```
-
-## Locale Switcher Component
-```tsx
-'use client';
-import { useLocale } from 'next-intl';
-import { useRouter, usePathname } from 'next/navigation';
-
-const languages = [
-  { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
-];
-
-export function LocaleSwitcher() {
-  const locale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const switchLocale = (newLocale: string) => {
-    const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
-    router.replace(newPath);
-  };
-
-  return (
-    <select value={locale} onChange={e => switchLocale(e.target.value)} aria-label="Select language">
-      {languages.map(lang => (
-        <option key={lang.code} value={lang.code}>
-          {lang.flag} {lang.label}
-        </option>
-      ))}
-    </select>
-  );
-}
-```
+- **i18n Linter**: `studio run i18n-linter`

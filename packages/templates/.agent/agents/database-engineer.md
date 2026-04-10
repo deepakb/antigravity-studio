@@ -1,3 +1,9 @@
+---
+name: database-engineer
+description: "Database schema design and query optimization specialist for Prisma ORM, Drizzle ORM, and raw SQL"
+activation: "schema design, migrations, ORM queries, database performance, indexing"
+---
+
 # Database Engineer Agent
 
 ## Identity

@@ -1,0 +1,7 @@
+{
+  "id": "base",
+  "description": "Baseline MCP servers included in every profile. Zero-config, always available.",
+  "servers": ["filesystem"],
+  "optional": [],
+  "notes": "Every project gets filesystem access. Additional servers are added per profile."
+}

@@ -1,21 +1,14 @@
 import chalk from "chalk";
-
-const PREFIX = {
-  info: chalk.cyan("ℹ"),
-  success: chalk.green("✓"),
-  warn: chalk.yellow("⚠"),
-  error: chalk.red("✗"),
-  step: chalk.blue("→"),
-  dim: chalk.dim("·"),
-};
+import logSymbols from "log-symbols";
+import boxen, { Options as BoxenOptions } from "boxen";
 
 export const logger = {
-  info: (msg: string) => console.log(`${PREFIX.info} ${msg}`),
-  success: (msg: string) => console.log(`${PREFIX.success} ${chalk.green(msg)}`),
-  warn: (msg: string) => console.warn(`${PREFIX.warn} ${chalk.yellow(msg)}`),
-  error: (msg: string) => console.error(`${PREFIX.error} ${chalk.red(msg)}`),
-  step: (msg: string) => console.log(`${PREFIX.step} ${msg}`),
-  dim: (msg: string) => console.log(`${PREFIX.dim} ${chalk.dim(msg)}`),
+  info: (msg: string) => console.log(`${logSymbols.info} ${msg}`),
+  success: (msg: string) => console.log(`${logSymbols.success} ${chalk.green(msg)}`),
+  warn: (msg: string) => console.warn(`${logSymbols.warning} ${chalk.yellow(msg)}`),
+  error: (msg: string) => console.error(`${logSymbols.error} ${chalk.red(msg)}`),
+  step: (msg: string) => console.log(`${chalk.blue("→")} ${msg}`),
+  dim: (msg: string) => console.log(chalk.dim(`· ${msg}`)),
   blank: () => console.log(""),
   divider: () => console.log(chalk.dim("─".repeat(55))),
 
@@ -24,5 +17,18 @@ export const logger = {
     console.log("");
     console.log(chalk.bold.white(title));
     console.log(chalk.dim("─".repeat(title.length)));
+  },
+
+  /** Print a message in a box */
+  box: (message: string, options: BoxenOptions = {}) => {
+    console.log(
+      boxen(message, {
+        padding: 1,
+        margin: { top: 1, bottom: 1 },
+        borderStyle: "round",
+        borderColor: "cyan",
+        ...options,
+      })
+    );
   },
 };

@@ -1,0 +1,8 @@
+{
+  "id": "react-vite",
+  "description": "MCP profile for React + Vite projects. Includes browser automation, fetch, and optional visual testing.",
+  "inherits": "base",
+  "servers": ["playwright", "filesystem", "fetch"],
+  "optional": ["github", "chromatic"],
+  "notes": "playwright enables visual E2E testing with the AI browser. Add GITHUB_PERSONAL_ACCESS_TOKEN for repo management. Add CHROMATIC_PROJECT_TOKEN for visual regression CI."
+}

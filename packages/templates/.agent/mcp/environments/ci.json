@@ -1,0 +1,10 @@
+{
+  "id": "ci",
+  "description": "CI/CD environment overrides. Playwright runs in headless mode for GitHub Actions and other CI systems.",
+  "overrides": {
+    "playwright": {
+      "args": ["@playwright/mcp@latest", "--headless"],
+      "notes": "Headless mode — no browser window. Required for CI environments without a display server."
+    }
+  }
+}

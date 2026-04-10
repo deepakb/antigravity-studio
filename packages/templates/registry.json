@@ -1,97 +1,991 @@
 {
   "agents": [
-    { "id": "enterprise-architect", "name": "Enterprise Architect", "category": "Architecture & Leadership" },
-    { "id": "tech-lead", "name": "Tech Lead", "category": "Architecture & Leadership" },
-    { "id": "nextjs-expert", "name": "Next.js Expert", "category": "Frontend (Web)" },
-    { "id": "react-performance-guru", "name": "React Performance Guru", "category": "Frontend (Web)" },
-    { "id": "frontend-specialist", "name": "Frontend Specialist", "category": "Frontend (Web)" },
-    { "id": "ui-component-architect", "name": "UI Component Architect", "category": "Frontend (Web)" },
-    { "id": "ux-designer", "name": "UX Designer", "category": "UX/UI Design" },
-    { "id": "ui-design-engineer", "name": "UI Design Engineer", "category": "UX/UI Design" },
-    { "id": "accessibility-auditor", "name": "Accessibility Auditor", "category": "UX/UI Design" },
-    { "id": "backend-specialist", "name": "Backend Specialist", "category": "Backend & API" },
-    { "id": "api-architect", "name": "API Architect", "category": "Backend & API" },
-    { "id": "database-engineer", "name": "Database Engineer", "category": "Backend & API" },
-    { "id": "data-layer-specialist", "name": "Data Layer Specialist", "category": "Backend & API" },
-    { "id": "security-engineer", "name": "Security Engineer", "category": "Security" },
-    { "id": "penetration-tester", "name": "Penetration Tester", "category": "Security" },
-    { "id": "rn-architect", "name": "React Native Architect", "category": "Mobile" },
-    { "id": "rn-performance-expert", "name": "React Native Performance Expert", "category": "Mobile" },
-    { "id": "mobile-ux-designer", "name": "Mobile UX Designer", "category": "Mobile" },
-    { "id": "qa-engineer", "name": "QA Engineer", "category": "Quality & Ops" },
-    { "id": "devops-engineer", "name": "DevOps Engineer", "category": "Quality & Ops" },
-    { "id": "debugger", "name": "Debugger", "category": "Quality & Ops" },
-    { "id": "seo-specialist", "name": "SEO Specialist", "category": "Marketing" },
-    { "id": "orchestrator", "name": "Orchestrator", "category": "Architecture & Leadership" },
-    { "id": "product-manager", "name": "Product Manager", "category": "Architecture & Leadership" },
-    { "id": "project-planner", "name": "Project Planner", "category": "Architecture & Leadership" },
-    { "id": "ai-engineer", "name": "AI Engineer", "category": "AI & Innovation" },
-    { "id": "prompt-engineer", "name": "Prompt Engineer", "category": "AI & Innovation" },
-    { "id": "llm-security-officer", "name": "LLM Security Officer", "category": "AI & Innovation" }
+    {
+      "id": "enterprise-architect",
+      "name": "Enterprise Architect",
+      "category": "Architecture & Leadership"
+    },
+    {
+      "id": "tech-lead",
+      "name": "Tech Lead",
+      "category": "Architecture & Leadership"
+    },
+    {
+      "id": "nextjs-expert",
+      "name": "Next.js Expert",
+      "category": "Frontend (Web)"
+    },
+    {
+      "id": "react-performance-guru",
+      "name": "React Performance Guru",
+      "category": "Frontend (Web)"
+    },
+    {
+      "id": "frontend-specialist",
+      "name": "Frontend Specialist",
+      "category": "Frontend (Web)"
+    },
+    {
+      "id": "ui-component-architect",
+      "name": "UI Component Architect",
+      "category": "Frontend (Web)"
+    },
+    {
+      "id": "ux-designer",
+      "name": "UX Designer",
+      "category": "UX/UI Design"
+    },
+    {
+      "id": "ui-design-engineer",
+      "name": "UI Design Engineer",
+      "category": "UX/UI Design"
+    },
+    {
+      "id": "accessibility-auditor",
+      "name": "Accessibility Auditor",
+      "category": "UX/UI Design"
+    },
+    {
+      "id": "motion-designer",
+      "name": "Motion Designer",
+      "category": "UX/UI Design"
+    },
+    {
+      "id": "design-system-architect",
+      "name": "Design System Architect",
+      "category": "UX/UI Design"
+    },
+    {
+      "id": "creative-director",
+      "name": "Creative Director",
+      "category": "UX/UI Design"
+    },
+    {
+      "id": "backend-specialist",
+      "name": "Backend Specialist",
+      "category": "Backend & API"
+    },
+    {
+      "id": "api-architect",
+      "name": "API Architect",
+      "category": "Backend & API"
+    },
+    {
+      "id": "database-engineer",
+      "name": "Database Engineer",
+      "category": "Backend & API"
+    },
+    {
+      "id": "data-layer-specialist",
+      "name": "Data Layer Specialist",
+      "category": "Backend & API"
+    },
+    {
+      "id": "security-engineer",
+      "name": "Security Engineer",
+      "category": "Security"
+    },
+    {
+      "id": "penetration-tester",
+      "name": "Penetration Tester",
+      "category": "Security"
+    },
+    {
+      "id": "rn-architect",
+      "name": "React Native Architect",
+      "category": "Mobile"
+    },
+    {
+      "id": "rn-performance-expert",
+      "name": "React Native Performance Expert",
+      "category": "Mobile"
+    },
+    {
+      "id": "mobile-ux-designer",
+      "name": "Mobile UX Designer",
+      "category": "Mobile"
+    },
+    {
+      "id": "qa-engineer",
+      "name": "QA Engineer",
+      "category": "Quality & Ops"
+    },
+    {
+      "id": "devops-engineer",
+      "name": "DevOps Engineer",
+      "category": "Quality & Ops"
+    },
+    {
+      "id": "debugger",
+      "name": "Debugger",
+      "category": "Quality & Ops"
+    },
+    {
+      "id": "seo-specialist",
+      "name": "SEO Specialist",
+      "category": "Marketing"
+    },
+    {
+      "id": "orchestrator",
+      "name": "Orchestrator",
+      "category": "Architecture & Leadership"
+    },
+    {
+      "id": "product-manager",
+      "name": "Product Manager",
+      "category": "Architecture & Leadership"
+    },
+    {
+      "id": "project-planner",
+      "name": "Project Planner",
+      "category": "Architecture & Leadership"
+    },
+    {
+      "id": "ai-engineer",
+      "name": "AI Engineer",
+      "category": "AI & Innovation"
+    },
+    {
+      "id": "prompt-engineer",
+      "name": "Prompt Engineer",
+      "category": "AI & Innovation"
+    },
+    {
+      "id": "llm-security-officer",
+      "name": "LLM Security Officer",
+      "category": "AI & Innovation"
+    },
+    {
+      "id": "cloud-architect",
+      "name": "Cloud Architect",
+      "category": "Architecture & Leadership"
+    }
   ],
   "profiles": {
     "nextjs-fullstack": {
       "label": "Full Stack (Next.js + Backend + DB)",
       "hint": "recommended",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "bundle-analyzer", "performance-budget", "seo-linter", "i18n-linter", "type-coverage", "verify-all"],
       "agents": [
-        "enterprise-architect", "nextjs-expert", "react-performance-guru",
-        "frontend-specialist", "ui-component-architect", "backend-specialist",
-        "api-architect", "database-engineer", "security-engineer",
-        "qa-engineer", "devops-engineer", "debugger", "seo-specialist",
-        "orchestrator", "product-manager"
+        "enterprise-architect",
+        "nextjs-expert",
+        "react-performance-guru",
+        "frontend-specialist",
+        "ui-component-architect",
+        "backend-specialist",
+        "api-architect",
+        "database-engineer",
+        "security-engineer",
+        "qa-engineer",
+        "devops-engineer",
+        "debugger",
+        "seo-specialist",
+        "orchestrator",
+        "product-manager"
+      ],
+      "skills": [
+        "nextjs-app-router",
+        "react-patterns",
+        "react-performance",
+        "api-design-restful",
+        "prisma-orm",
+        "auth-nextauth",
+        "shadcn-radix-ui",
+        "tailwind-design-system",
+        "solid-principles",
+        "clean-architecture",
+        "vitest-unit-tests"
       ]
     },
     "nextjs-frontend": {
       "label": "Frontend Only (React/Next.js)",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "bundle-analyzer", "performance-budget", "seo-linter", "i18n-linter", "type-coverage", "verify-all"],
       "agents": [
-        "nextjs-expert", "react-performance-guru", "frontend-specialist",
-        "ui-component-architect", "ux-designer", "ui-design-engineer",
-        "accessibility-auditor", "qa-engineer", "debugger", "seo-specialist"
+        "nextjs-expert",
+        "react-performance-guru",
+        "frontend-specialist",
+        "ui-component-architect",
+        "ux-designer",
+        "ui-design-engineer",
+        "accessibility-auditor",
+        "qa-engineer",
+        "debugger",
+        "seo-specialist"
+      ],
+      "skills": [
+        "nextjs-app-router",
+        "react-patterns",
+        "react-performance",
+        "shadcn-radix-ui",
+        "tailwind-design-system",
+        "vitest-unit-tests",
+        "seo-core-web-vitals"
       ]
     },
     "expo-mobile": {
       "label": "Mobile (React Native / Expo)",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "verify-all"],
       "agents": [
-        "rn-architect", "rn-performance-expert", "mobile-ux-designer",
-        "frontend-specialist", "backend-specialist", "security-engineer",
-        "qa-engineer", "devops-engineer", "debugger"
+        "rn-architect",
+        "rn-performance-expert",
+        "mobile-ux-designer",
+        "frontend-specialist",
+        "backend-specialist",
+        "security-engineer",
+        "qa-engineer",
+        "devops-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "expo-router-navigation",
+        "react-patterns",
+        "state-management",
+        "vitest-unit-tests",
+        "solid-principles"
       ]
     },
     "react-vite": {
-      "label": "React + Vite",
+      "label": "React + Vite (SPA — Enterprise)",
+      "scriptRunners": ["node"],
+      "scriptGates": [
+        "security-scan",
+        "ts-check",
+        "env-validator",
+        "dependency-audit",
+        "license-audit",
+        "accessibility-audit",
+        "bundle-analyzer",
+        "performance-budget",
+        "lighthouse-ci",
+        "seo-linter",
+        "i18n-linter",
+        "type-coverage",
+        "dead-code-detector",
+        "e2e-runner",
+        "contrast-checker",
+        "animation-budget",
+        "storybook-build",
+        "chromatic-visual-test",
+        "verify-all"
+      ],
       "agents": [
-        "frontend-specialist", "react-performance-guru", "ui-component-architect",
-        "ux-designer", "qa-engineer", "debugger"
+        "frontend-specialist",
+        "react-performance-guru",
+        "ui-component-architect",
+        "ui-design-engineer",
+        "ux-designer",
+        "motion-designer",
+        "design-system-architect",
+        "creative-director",
+        "security-engineer",
+        "backend-specialist",
+        "devops-engineer",
+        "seo-specialist",
+        "accessibility-auditor",
+        "qa-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "react-patterns",
+        "react-performance",
+        "shadcn-radix-ui",
+        "tailwind-design-system",
+        "design-token-architecture",
+        "color-system",
+        "typography-system",
+        "responsive-patterns",
+        "framer-motion",
+        "gsap-animations",
+        "lottie-animations",
+        "micro-interactions",
+        "dark-mode-theming",
+        "state-management",
+        "solid-principles",
+        "clean-architecture",
+        "vitest-unit-tests",
+        "react-testing-library",
+        "playwright-e2e",
+        "storybook-driven-development",
+        "api-design-restful",
+        "seo-core-web-vitals",
+        "accessibility-wcag"
       ]
     },
     "node-api": {
       "label": "Backend API (Node.js)",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "type-coverage", "verify-all"],
       "agents": [
-        "backend-specialist", "api-architect", "database-engineer",
-        "security-engineer", "devops-engineer", "debugger", "product-manager"
+        "backend-specialist",
+        "api-architect",
+        "database-engineer",
+        "security-engineer",
+        "devops-engineer",
+        "cloud-architect",
+        "debugger",
+        "product-manager"
+      ],
+      "skills": [
+        "api-design-restful",
+        "prisma-orm",
+        "node-express-testing",
+        "vitest-unit-tests",
+        "solid-principles",
+        "clean-architecture"
       ]
     },
     "monorepo-root": {
       "label": "Monorepo Workspace Root",
       "hint": "Orchestration & DevOps only",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "verify-all"],
       "agents": [
-        "enterprise-architect", "tech-lead", "orchestrator", "devops-engineer",
-        "project-planner", "security-engineer", "qa-engineer"
+        "enterprise-architect",
+        "tech-lead",
+        "orchestrator",
+        "devops-engineer",
+        "cloud-architect",
+        "project-planner",
+        "security-engineer",
+        "qa-engineer"
+      ],
+      "skills": [
+        "monorepo-turborepo",
+        "github-actions-ci-cd",
+        "docker-containerization",
+        "solid-principles",
+        "clean-architecture"
       ]
     },
     "monorepo-package": {
       "label": "Monorepo Sub-Package",
       "hint": "Specialized specialists",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "dependency-audit", "license-audit", "verify-all"],
       "agents": [
-        "nextjs-expert", "backend-specialist", "ui-component-architect",
-        "database-engineer", "qa-engineer", "debugger"
+        "nextjs-expert",
+        "backend-specialist",
+        "ui-component-architect",
+        "database-engineer",
+        "qa-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "solid-principles",
+        "vitest-unit-tests",
+        "clean-architecture"
+      ]
+    },
+    "angular-enterprise": {
+      "label": "Angular (Enterprise)",
+      "hint": "RxJS, NgRx, Angular Material",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "bundle-analyzer", "seo-linter", "i18n-linter", "type-coverage", "verify-all"],
+      "agents": [
+        "enterprise-architect",
+        "tech-lead",
+        "frontend-specialist",
+        "ui-component-architect",
+        "ux-designer",
+        "backend-specialist",
+        "api-architect",
+        "security-engineer",
+        "qa-engineer",
+        "devops-engineer",
+        "accessibility-auditor",
+        "debugger"
+      ],
+      "skills": [
+        "angular-patterns",
+        "rxjs-patterns",
+        "api-design-restful",
+        "solid-principles",
+        "clean-architecture",
+        "owasp-top10",
+        "github-actions-ci-cd",
+        "vitest-unit-tests",
+        "playwright-e2e",
+        "accessibility-wcag"
+      ]
+    },
+    "vue-nuxt": {
+      "label": "Vue / Nuxt.js",
+      "hint": "Full-stack Vue with Nuxt",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "bundle-analyzer", "seo-linter", "i18n-linter", "type-coverage", "verify-all"],
+      "agents": [
+        "frontend-specialist",
+        "ui-component-architect",
+        "ux-designer",
+        "backend-specialist",
+        "api-architect",
+        "qa-engineer",
+        "devops-engineer",
+        "debugger",
+        "seo-specialist"
+      ],
+      "skills": [
+        "vue-patterns",
+        "api-design-restful",
+        "solid-principles",
+        "clean-architecture",
+        "vitest-unit-tests",
+        "seo-core-web-vitals",
+        "tailwind-design-system"
+      ]
+    },
+    "vue-vite": {
+      "label": "Vue + Vite (SPA)",
+      "hint": "Client-side Vue application",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "bundle-analyzer", "seo-linter", "i18n-linter", "type-coverage", "verify-all"],
+      "agents": [
+        "frontend-specialist",
+        "ui-component-architect",
+        "ux-designer",
+        "qa-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "vue-patterns",
+        "solid-principles",
+        "tailwind-design-system",
+        "vitest-unit-tests"
+      ]
+    },
+    "python-fastapi": {
+      "label": "Python / FastAPI",
+      "hint": "Async Python REST API",
+      "scriptRunners": ["python"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "type-coverage", "verify-all"],
+      "agents": [
+        "backend-specialist",
+        "api-architect",
+        "database-engineer",
+        "security-engineer",
+        "devops-engineer",
+        "cloud-architect",
+        "qa-engineer",
+        "ai-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "python-fastapi-patterns",
+        "api-design-restful",
+        "python-testing",
+        "solid-principles",
+        "clean-architecture",
+        "owasp-top10",
+        "docker-containerization",
+        "github-actions-ci-cd",
+        "input-validation-sanitization"
+      ]
+    },
+    "python-django": {
+      "label": "Python / Django",
+      "hint": "Full-stack Django application",
+      "scriptRunners": ["python"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "type-coverage", "verify-all"],
+      "agents": [
+        "backend-specialist",
+        "api-architect",
+        "database-engineer",
+        "security-engineer",
+        "devops-engineer",
+        "qa-engineer",
+        "frontend-specialist",
+        "debugger"
+      ],
+      "skills": [
+        "python-django-patterns",
+        "api-design-restful",
+        "python-testing",
+        "solid-principles",
+        "clean-architecture",
+        "owasp-top10",
+        "docker-containerization",
+        "github-actions-ci-cd"
+      ]
+    },
+    "java-spring": {
+      "label": "Java / Spring Boot",
+      "hint": "Enterprise Java REST API",
+      "scriptRunners": ["java"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "verify-all"],
+      "agents": [
+        "enterprise-architect",
+        "tech-lead",
+        "backend-specialist",
+        "api-architect",
+        "database-engineer",
+        "security-engineer",
+        "devops-engineer",
+        "cloud-architect",
+        "qa-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "java-spring-patterns",
+        "api-design-restful",
+        "solid-principles",
+        "clean-architecture",
+        "owasp-top10",
+        "docker-containerization",
+        "github-actions-ci-cd",
+        "input-validation-sanitization"
+      ]
+    },
+    "dotnet-api": {
+      "label": ".NET / ASP.NET Core",
+      "hint": "Enterprise .NET API or Blazor",
+      "scriptRunners": ["dotnet"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "verify-all"],
+      "agents": [
+        "enterprise-architect",
+        "tech-lead",
+        "backend-specialist",
+        "api-architect",
+        "database-engineer",
+        "security-engineer",
+        "devops-engineer",
+        "cloud-architect",
+        "qa-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "dotnet-patterns",
+        "api-design-restful",
+        "solid-principles",
+        "clean-architecture",
+        "owasp-top10",
+        "docker-containerization",
+        "github-actions-ci-cd",
+        "azure-deployment"
+      ]
+    },
+    "flutter-mobile": {
+      "label": "Flutter (Mobile / Desktop)",
+      "hint": "Cross-platform Flutter app",
+      "scriptRunners": ["flutter"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "verify-all"],
+      "agents": [
+        "rn-architect",
+        "mobile-ux-designer",
+        "frontend-specialist",
+        "backend-specialist",
+        "security-engineer",
+        "qa-engineer",
+        "devops-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "flutter-patterns",
+        "solid-principles",
+        "clean-architecture",
+        "api-design-restful",
+        "owasp-top10",
+        "github-actions-ci-cd"
       ]
     }
   },
+  "skills": [
+    {
+      "id": "accessibility-wcag",
+      "name": "Accessibility (WCAG)",
+      "category": "Frontend & UI",
+      "tokenBudget": 600
+    },
+    {
+      "id": "anthropic-claude-sdk",
+      "name": "Anthropic Claude SDK",
+      "category": "AI & Engineering",
+      "tokenBudget": 550
+    },
+    {
+      "id": "api-design-restful",
+      "name": "RESTful API Design",
+      "category": "Backend & API",
+      "tokenBudget": 500
+    },
+    {
+      "id": "auth-nextauth",
+      "name": "Auth (NextAuth.js)",
+      "category": "Security & Auth",
+      "tokenBudget": 400
+    },
+    {
+      "id": "aws-deployment",
+      "name": "AWS Deployment",
+      "category": "DevOps & Cloud",
+      "tokenBudget": 400
+    },
+    {
+      "id": "azure-deployment",
+      "name": "Azure Deployment",
+      "category": "DevOps & Cloud",
+      "tokenBudget": 350
+    },
+    {
+      "id": "caching-strategies",
+      "name": "Caching Strategies",
+      "category": "Performance",
+      "tokenBudget": 450
+    },
+    {
+      "id": "clean-architecture",
+      "name": "Clean Architecture",
+      "category": "Architecture",
+      "tokenBudget": 450
+    },
+    {
+      "id": "dark-mode-theming",
+      "name": "Dark Mode & Theming",
+      "category": "Frontend & UI",
+      "tokenBudget": 400
+    },
+    {
+      "id": "docker-containerization",
+      "name": "Docker Containerization",
+      "category": "DevOps & Cloud",
+      "tokenBudget": 500
+    },
+    {
+      "id": "expo-router-navigation",
+      "name": "Expo Router Navigation",
+      "category": "Mobile",
+      "tokenBudget": 400
+    },
+    {
+      "id": "form-handling",
+      "name": "Form Handling (React)",
+      "category": "Frontend & UI",
+      "tokenBudget": 450
+    },
+    {
+      "id": "framer-motion",
+      "name": "Framer Motion Animations",
+      "category": "Frontend & UI",
+      "tokenBudget": 500
+    },
+    {
+      "id": "gcp-deployment",
+      "name": "GCP Deployment",
+      "category": "DevOps & Cloud",
+      "tokenBudget": 400
+    },
+    {
+      "id": "github-actions-ci-cd",
+      "name": "GitHub Actions CI/CD",
+      "category": "DevOps & Cloud",
+      "tokenBudget": 500
+    },
+    {
+      "id": "google-gemini-sdk",
+      "name": "Google Gemini SDK",
+      "category": "AI & Engineering",
+      "tokenBudget": 550
+    },
+    {
+      "id": "i18n-localization",
+      "name": "i18n & Localization",
+      "category": "Frontend & UI",
+      "tokenBudget": 450
+    },
+    {
+      "id": "input-validation-sanitization",
+      "name": "Input Validation",
+      "category": "Security & Auth",
+      "tokenBudget": 450
+    },
+    {
+      "id": "langchain-typescript",
+      "name": "LangChain (TypeScript)",
+      "category": "AI & Engineering",
+      "tokenBudget": 450
+    },
+    {
+      "id": "monorepo-turborepo",
+      "name": "Monorepo (Turborepo)",
+      "category": "Architecture",
+      "tokenBudget": 400
+    },
+    {
+      "id": "nextjs-app-router",
+      "name": "Next.js App Router",
+      "category": "Frontend & UI",
+      "tokenBudget": 450
+    },
+    {
+      "id": "node-express-testing",
+      "name": "Node/Express Testing",
+      "category": "Backend & API",
+      "tokenBudget": 400
+    },
+    {
+      "id": "openai-sdk",
+      "name": "OpenAI SDK",
+      "category": "AI & Engineering",
+      "tokenBudget": 550
+    },
+    {
+      "id": "owasp-top10",
+      "name": "OWASP Top 10",
+      "category": "Security & Auth",
+      "tokenBudget": 450
+    },
+    {
+      "id": "performance-testing",
+      "name": "Performance Testing",
+      "category": "Performance",
+      "tokenBudget": 500
+    },
+    {
+      "id": "playwright-e2e",
+      "name": "Playwright E2E",
+      "category": "Quality (QA)",
+      "tokenBudget": 450
+    },
+    {
+      "id": "prisma-orm",
+      "name": "Prisma ORM",
+      "category": "Backend & API",
+      "tokenBudget": 500
+    },
+    {
+      "id": "rag-implementation",
+      "name": "RAG Implementation",
+      "category": "AI & Engineering",
+      "tokenBudget": 500
+    },
+    {
+      "id": "react-patterns",
+      "name": "React Patterns",
+      "category": "Frontend & UI",
+      "tokenBudget": 500
+    },
+    {
+      "id": "react-performance",
+      "name": "React Performance",
+      "category": "Performance",
+      "tokenBudget": 500
+    },
+    {
+      "id": "react-testing-library",
+      "name": "React Testing Library",
+      "category": "Quality (QA)",
+      "tokenBudget": 400
+    },
+    {
+      "id": "realtime-patterns",
+      "name": "Realtime Patterns",
+      "category": "Backend & API",
+      "tokenBudget": 450
+    },
+    {
+      "id": "seo-core-web-vitals",
+      "name": "SEO & Web Vitals",
+      "category": "Marketing & SEO",
+      "tokenBudget": 500
+    },
+    {
+      "id": "shadcn-radix-ui",
+      "name": "shadcn/ui & Radix UI",
+      "category": "Frontend & UI",
+      "tokenBudget": 550
+    },
+    {
+      "id": "solid-principles",
+      "name": "SOLID Principles",
+      "category": "Architecture",
+      "tokenBudget": 450
+    },
+    {
+      "id": "state-management",
+      "name": "State Management (React)",
+      "category": "Frontend & UI",
+      "tokenBudget": 450
+    },
+    {
+      "id": "tailwind-design-system",
+      "name": "Tailwind Design System",
+      "category": "Frontend & UI",
+      "tokenBudget": 450
+    },
+    {
+      "id": "tdd-workflow",
+      "name": "TDD Workflow",
+      "category": "Quality (QA)",
+      "tokenBudget": 400
+    },
+    {
+      "id": "ux-fundamentals",
+      "name": "UX Fundamentals",
+      "category": "UX/UI Design",
+      "tokenBudget": 450
+    },
+    {
+      "id": "vercel-ai-sdk",
+      "name": "Vercel AI SDK",
+      "category": "AI & Engineering",
+      "tokenBudget": 500
+    },
+    {
+      "id": "vercel-deployment",
+      "name": "Vercel Deployment",
+      "category": "DevOps & Cloud",
+      "tokenBudget": 950
+    },
+    {
+      "id": "vitest-unit-tests",
+      "name": "Vitest Unit Testing",
+      "category": "Quality (QA)",
+      "tokenBudget": 500
+    },
+    {
+      "id": "angular-patterns",
+      "name": "Angular Patterns & Architecture",
+      "category": "Frontend & UI",
+      "tokenBudget": 850
+    },
+    {
+      "id": "rxjs-patterns",
+      "name": "RxJS & Reactive Patterns",
+      "category": "Frontend & UI",
+      "tokenBudget": 800
+    },
+    {
+      "id": "vue-patterns",
+      "name": "Vue.js Patterns & Best Practices",
+      "category": "Frontend & UI",
+      "tokenBudget": 850
+    },
+    {
+      "id": "python-fastapi-patterns",
+      "name": "Python FastAPI Patterns",
+      "category": "Backend & API",
+      "tokenBudget": 900
+    },
+    {
+      "id": "python-django-patterns",
+      "name": "Python Django Patterns",
+      "category": "Backend & API",
+      "tokenBudget": 900
+    },
+    {
+      "id": "python-testing",
+      "name": "Python Testing (pytest)",
+      "category": "Quality (QA)",
+      "tokenBudget": 800
+    },
+    {
+      "id": "java-spring-patterns",
+      "name": "Java Spring Boot Patterns",
+      "category": "Backend & API",
+      "tokenBudget": 1050
+    },
+    {
+      "id": "dotnet-patterns",
+      "name": ".NET / ASP.NET Core Patterns",
+      "category": "Backend & API",
+      "tokenBudget": 1100
+    },
+    {
+      "id": "flutter-patterns",
+      "name": "Flutter Patterns & Architecture",
+      "category": "Mobile",
+      "tokenBudget": 1000
+    },
+    {
+      "id": "gsap-animations",
+      "name": "GSAP Animations & ScrollTrigger",
+      "category": "Frontend & UI",
+      "tokenBudget": 500
+    },
+    {
+      "id": "design-token-architecture",
+      "name": "Design Token Architecture",
+      "category": "Frontend & UI",
+      "tokenBudget": 450
+    },
+    {
+      "id": "typography-system",
+      "name": "Typography System (Fluid)",
+      "category": "Frontend & UI",
+      "tokenBudget": 400
+    },
+    {
+      "id": "color-system",
+      "name": "Color System (Radix + Semantic)",
+      "category": "Frontend & UI",
+      "tokenBudget": 400
+    },
+    {
+      "id": "responsive-patterns",
+      "name": "Responsive Design Patterns",
+      "category": "Frontend & UI",
+      "tokenBudget": 400
+    },
+    {
+      "id": "micro-interactions",
+      "name": "Micro-interactions & Polish",
+      "category": "Frontend & UI",
+      "tokenBudget": 400
+    },
+    {
+      "id": "storybook-driven-development",
+      "name": "Storybook-Driven Development",
+      "category": "Frontend & UI",
+      "tokenBudget": 450
+    },
+    {
+      "id": "lottie-animations",
+      "name": "Lottie Animations",
+      "category": "Frontend & UI",
+      "tokenBudget": 350
+    },
+    {
+      "id": "angular-enterprise-standards",
+      "name": "Angular Enterprise Standards",
+      "category": "Frontend & UI",
+      "tokenBudget": 700,
+      "contributed": true
+    },
+    {
+      "id": "enterprise-testing-standards",
+      "name": "Enterprise Testing Standards",
+      "category": "Quality (QA)",
+      "tokenBudget": 650,
+      "contributed": true
+    },
+    {
+      "id": "enterprise-accessibility-standards",
+      "name": "Enterprise Accessibility Standards",
+      "category": "UX/UI Design",
+      "tokenBudget": 550,
+      "contributed": true
+    }
+  ],
   "slashCommands": [
-    "/blueprint", "/create", "/enhance", "/debug",
-    "/audit-security", "/refactor-solid", "/generate-tests",
-    "/generate-e2e", "/deploy", "/perf-audit", "/a11y-audit",
-    "/document", "/orchestrate", "/preview", "/status"
+    "/blueprint",
+    "/create",
+    "/enhance",
+    "/debug",
+    "/audit-security",
+    "/refactor-solid",
+    "/generate-tests",
+    "/generate-e2e",
+    "/deploy",
+    "/perf-audit",
+    "/a11y-audit",
+    "/document",
+    "/orchestrate",
+    "/preview",
+    "/status",
+    "/design-system",
+    "/motion-audit",
+    "/chromatic"
   ]
 }

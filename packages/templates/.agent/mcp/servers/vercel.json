@@ -1,0 +1,46 @@
+{
+  "id": "vercel",
+  "label": "Vercel Deploy MCP",
+  "description": "Gives AI agents control over Vercel deployments — trigger deploys, check logs, manage env vars.",
+  "credentialTier": "required",
+  "command": "npx",
+  "args": ["-y", "@vercel/mcp-adapter@latest"],
+  "env": {
+    "VERCEL_TOKEN": "${VERCEL_TOKEN}",
+    "VERCEL_ORG_ID": "${VERCEL_ORG_ID}",
+    "VERCEL_PROJECT_ID": "${VERCEL_PROJECT_ID}"
+  },
+  "credentials": {
+    "VERCEL_TOKEN": {
+      "description": "Vercel API token",
+      "howToGet": "https://vercel.com/account/settings/tokens",
+      "required": true,
+      "placeholder": "your_vercel_token"
+    },
+    "VERCEL_ORG_ID": {
+      "description": "Vercel organization ID (from vercel.json or dashboard)",
+      "howToGet": "https://vercel.com/docs/projects/project-configuration",
+      "required": true,
+      "placeholder": "team_xxxxxxxxxxxx"
+    },
+    "VERCEL_PROJECT_ID": {
+      "description": "Vercel project ID (from .vercel/project.json after first deploy)",
+      "howToGet": "https://vercel.com/docs/projects/project-configuration",
+      "required": true,
+      "placeholder": "prj_xxxxxxxxxxxx"
+    }
+  },
+  "capabilities": {
+    "withCredentials": [
+      "deploy-trigger",
+      "deployment-status",
+      "log-streaming",
+      "env-var-management",
+      "rollback",
+      "domain-management"
+    ],
+    "withoutCredentials": []
+  },
+  "profiles": ["nextjs"],
+  "notes": "All 3 env vars required. Run `vercel link` in your project first to get VERCEL_ORG_ID and VERCEL_PROJECT_ID."
+}

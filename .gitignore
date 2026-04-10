@@ -9,6 +9,10 @@ dist/
 .next/
 out/
 
+# apps/studio/templates/ is a BUILD ARTIFACT populated by tsup onSuccess.
+# Single source of truth is packages/templates/ — never edit this copy directly.
+apps/studio/templates/
+
 # IDE / Editor
 .vscode/
 .cursor/

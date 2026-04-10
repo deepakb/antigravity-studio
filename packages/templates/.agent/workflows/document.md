@@ -1,117 +1,255 @@
 ---
-description: document — generate JSDoc, README, and Storybook documentation for code
+description: document — generate JSDoc, README updates, ADRs, and Storybook stories for existing code
 ---
 
 # /document Workflow
 
-> **Purpose**: Generate comprehensive, accurate documentation — JSDoc for functions, README for modules, and Storybook stories for components.
+> **Purpose**: Generate high-quality, accurate documentation that developers actually read — JSDoc for APIs, Storybook for components, ADRs for decisions, and README for onboarding.
 
-## Execution Steps
-
-### Step 1: Analyze Code Structure
-Read the target file/module and identify:
-- [ ] Public exported functions (need JSDoc)
-- [ ] React components (need Storybook stories)
-- [ ] Modules or packages (need README)
-- [ ] Complex algorithms (need inline comments)
-
-### Step 2: JSDoc for Functions
-```typescript
-/**
- * Calculates the discounted price for a user based on their subscription tier.
- *
- * @param price - The original price in cents (integer)
- * @param tier - The user's subscription tier
- * @returns The discounted price in cents
- * @throws {Error} If price is negative or zero
- *
- * @example
- * const discounted = calculateDiscount(1000, 'premium');
- * // Returns 800 (20% off)
- */
-export function calculateDiscount(price: number, tier: UserTier): number {
-  if (price <= 0) throw new Error('Price must be positive');
-  const rates: Record<UserTier, number> = { premium: 0.8, pro: 0.9, free: 1 };
-  return Math.round(price * (rates[tier] ?? 1));
-}
+## 🤖 Activation
+```
+🤖 Applying @domain-specialist + loading documentation-patterns skills...
 ```
 
-### Step 3: Storybook Stories (for UI components)
-```tsx
-// [Component].stories.tsx
+---
+
+## Documentation Types — Match to Target
+
+| Target | Output | When |
+|--------|--------|------|
+| Public function/module | JSDoc with examples | Always |
+| React component | Storybook story + JSDoc props | UI components |
+| Architectural decision | ADR (Architecture Decision Record) | Before large changes |
+| New feature | README section update | User-facing features |
+| API endpoint | OpenAPI/JSDoc with curl examples | Route handlers |
+| Configuration | .env.example + comments | Env variables |
+
+---
+
+## Phase 1: JSDoc — Functions & APIs
+
+```typescript
+/**
+ * Calculates the discounted price based on the user's subscription tier.
+ *
+ * @param price - The original price in cents (must be positive)
+ * @param tier - The user's subscription tier
+ * @returns The discounted price in cents
+ * @throws {RangeError} When price is negative
+ * @throws {TypeError} When tier is not a valid SubscriptionTier
+ *
+ * @example
+ * // Premium user gets 20% discount
+ * calculateDiscount(1000, 'premium') // → 800
+ *
+ * @example
+ * // Free user gets no discount
+ * calculateDiscount(1000, 'free') // → 1000
+ *
+ * @see https://stripe.com/docs/billing/subscriptions
+ */
+export function calculateDiscount(price: number, tier: SubscriptionTier): number {
+  if (price < 0) throw new RangeError('Price must be positive');
+  return Math.round(price * DISCOUNT_RATES[tier]);
+}
+
+/**
+ * Federated data access layer for user profile queries.
+ * Includes session validation and caches per-request via React cache().
+ *
+ * @param userId - The authenticated user's ID
+ * @returns The user profile, or null if not found
+ *
+ * @security Validates session internally — only call from Server Components or Server Actions
+ */
+export const getUserProfile = cache(async (userId: string): Promise<UserProfile | null> => {
+  // ...
+});
+```
+
+---
+
+## Phase 2: Storybook Stories — React Components
+
+```typescript
+// components/Button/Button.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { UserCard } from './UserCard';
+import { Button } from './Button';
 
 const meta = {
-  title: 'Components/UserCard',
-  component: UserCard,
+  title: 'UI/Button',
+  component: Button,
   parameters: {
     layout: 'centered',
-    docs: { description: { component: 'A card displaying user profile information.' } },
+    docs: {
+      description: {
+        component: 'Primary action button. Use for the single most important action on a page.',
+      },
+    },
+  },
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary', 'destructive', 'ghost'],
+      description: 'Visual style variant',
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+    },
+    disabled: { control: 'boolean' },
+    isLoading: { control: 'boolean', description: 'Shows spinner, disables interaction' },
   },
   tags: ['autodocs'],
-  argTypes: {
-    onSelect: { action: 'selected' },
-  },
-} satisfies Meta<typeof UserCard>;
+} satisfies Meta<typeof Button>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  args: { user: { id: '1', name: 'Alice Chen', email: 'alice@example.com' } },
+export const Primary: Story = {
+  args: { variant: 'primary', children: 'Submit', size: 'md' },
 };
 
-export const WithAction: Story = {
-  args: { ...Default.args, onSelect: () => {} },
+export const Loading: Story = {
+  args: { variant: 'primary', isLoading: true, children: 'Saving...' },
 };
 
-export const LongName: Story = {
-  args: { user: { id: '2', name: 'A Very Long Name That Might Overflow', email: 'long@example.com' } },
+export const Destructive: Story = {
+  args: { variant: 'destructive', children: 'Delete Account' },
+};
+
+// Accessibility story
+export const FocusVisible: Story = {
+  args: { variant: 'primary', children: 'Tab to me' },
+  parameters: {
+    pseudo: { focusVisible: true },
+  },
 };
 ```
 
-### Step 4: Module README
+---
+
+## Phase 3: Architecture Decision Records (ADRs)
+
 ```markdown
-# [Module Name]
+# ADR-[N]: [Decision Title]
 
-> One-line description of what this module does.
+**Date**: [YYYY-MM-DD]
+**Status**: Proposed | Accepted | Deprecated | Superseded by ADR-[M]
+**Deciders**: [names or team]
 
-## Installation
-\`\`\`bash
-npm install @scope/module
-\`\`\`
+## Context
 
-## Quick Start
-\`\`\`typescript
-import { functionName } from '@scope/module';
-const result = functionName(input);
-\`\`\`
+[What is the issue? What technical forces, constraints, or requirements led to needing this decision?]
 
-## API Reference
+## Decision Drivers
 
-### \`functionName(param: Type): ReturnType\`
-Description of what it does.
+- [Driver 1: e.g. TypeScript-first, no runtime type errors]
+- [Driver 2: e.g. Bundle size < 200kb]
+- [Driver 3: e.g. Must work offline on mobile]
 
-| Parameter | Type | Required | Description |
-|---|---|---|---|
-| param | `string` | ✅ | The input |
+## Considered Options
 
-## Examples
-[Concrete, runnable examples]
+1. **[Option A]** — [one sentence description]
+2. **[Option B]** — [one sentence description]
+3. **[Option C]** — [one sentence description]
+
+## Decision
+
+We chose **[Option A]** because:
+- [Reason 1]
+- [Reason 2]
+
+## Trade-offs
+
+**Positive**: [What we gain]
+**Negative**: [What we accept/sacrifice]
+**Risks**: [What could go wrong and how we'll mitigate]
+
+## Implementation Notes
+
+[Specific guidance on HOW to implement this decision in {{name}}]
 ```
 
-### Step 5: Inline Comments for Complex Logic
+Store ADRs at: `docs/decisions/` or `ADRs/`
+
+---
+
+## Phase 4: README Updates
+
+When a new feature is added, update README with:
+
+```markdown
+## [Feature Name]
+
+Brief description of what it does and when to use it.
+
+### Setup
+
+\`\`\`bash
+# Any setup steps (env vars, migrations, config)
+\`\`\`
+
+### Usage
+
+\`\`\`typescript
+// Minimal, real-world example
+\`\`\`
+
+### Configuration
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| ... | ... | ... | ... |
+```
+
+---
+
+## Phase 5: API Route Documentation
+
 ```typescript
-// ✅ Comment WHY, not WHAT (code shows what; comments show why)
+/**
+ * @api {post} /api/posts Create Post
+ * @apiGroup Posts
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {string} Cookie Session cookie (authentication required)
+ *
+ * @apiBody {string{1..200}} title  Post title
+ * @apiBody {string}         [body] Post body (optional)
+ *
+ * @apiSuccess {string} id        Post ID
+ * @apiSuccess {string} title     Post title
+ * @apiSuccess {string} createdAt ISO timestamp
+ *
+ * @apiError (401) Unauthorized  Not authenticated
+ * @apiError (400) BadRequest    Validation failed — see error field for details
+ *
+ * @apiExample {curl} Example usage:
+ *   curl -X POST /api/posts \
+ *     -H "Content-Type: application/json" \
+ *     -d '{"title": "My Post"}'
+ */
+export async function POST(request: NextRequest) { ... }
+```
 
-// ❌ Bad: "Increment counter"
-count++;
+---
 
-// ✅ Good: "Offset by 1 because the API index is 1-based"
-const apiIndex = count + 1;
+## Delivery Format
 
-// ✅ Good: Complex algorithm explanation
-// Uses Fisher-Yates shuffle (O(n)) rather than sort() (O(n log n))
-// because we need guaranteed uniform distribution for fairness
+```markdown
+## 📚 Documentation Generated: [Target]
+
+### Files Updated/Created
+| File | Type | Summary |
+|------|------|---------|
+| ... | JSDoc / Story / ADR / README | ... |
+
+### Coverage
+- Functions documented: N/N
+- Components with stories: N/N
+- New ADRs: N
+
+### Next docs recommended:
+- [What's undocumented and should be]
 ```

@@ -1,64 +1,136 @@
 ---
-description: debug — systematic reproduction, diagnosis, fix, and prevention of bugs
+description: debug — systematic root cause analysis using evidence-based debugging protocol
 ---
 
 # /debug Workflow
 
-> **Purpose**: Systematically find and fix the root cause of a bug. Never guess. Always verify. Always add a regression test.
+> **Purpose**: Identify the true root cause of a bug — not just suppress the symptom. Use structured investigation before touching any code.
 
-## Activate: @debugger Agent
+## 🎯 When to Use
 
-## Execution Steps
+Invoke `/debug` when:
+- There's an error message, stack trace, or unexpected behavior
+- Something that worked before is now broken
+- A user reports a bug
+- Test is failing for unclear reasons
 
-### Step 1: Reproduce (Before Anything Else)
-- [ ] Can you reproduce the bug consistently? If not, gather more info first.
-- [ ] What is the minimum input to trigger it?
-- [ ] Does it happen in dev? Prod? Both?
+---
 
-### Step 2: Isolate
-Narrow down where the bug lives:
+## Phase 1: Evidence Collection (No Guessing)
+
+**Activates**: `@debugger` + relevant domain specialist
+
 ```
-Browser?    → Open DevTools → Console tab → Network tab
-Server?     → Check server logs → Check database state
-Rendering?  → Add React DevTools → Check component props
-TypeScript? → Run `npm run typecheck` → Find type errors
-Build?      → Run `npm run build` → Find build errors
+🔍 DEBUG SESSION: {{name}}
+
+SYMPTOMS:
+  Error: [exact error message + stack trace]
+  Behavior: [what happens vs. what was expected]
+  Reproduction: [steps to reliably reproduce]
+  Environment: [dev / staging / production? Browser? Node version?]
+
+CONTEXT:
+  When did it start? [after which change / deploy]
+  What changed recently? [git log, recent PRs]
+  Is it consistent or intermittent?
 ```
 
-### Step 3: Form Hypotheses (3 Max)
-State 3 causes ranked by likelihood. For each:
-- Evidence supporting it
-- The single cheapest test to confirm/deny
+Do NOT propose a fix until all evidence is collected.
 
-### Step 4: Test Hypothesis (Binary Search)
-Add targeted debug output — never scatter logs everywhere:
+---
+
+## Phase 2: Root Cause Analysis
+
+Apply the **5-Why Method** — ask "why" until you reach the systemic root:
+
+```
+Why 1: Why is the error occurring?
+  → [immediate cause]
+
+Why 2: Why is [immediate cause] happening?
+  → [underlying cause]
+
+Why 3: Why does [underlying cause] exist?
+  → [system-level reason]
+
+Root Cause: [The actual thing to fix]
+Category:   [ ] Type error  [ ] Logic bug  [ ] Race condition
+            [ ] Missing null check  [ ] Wrong assumption  [ ] External dependency
+```
+
+If root cause is unclear after 5-Why → apply **Binary Search**: comment out half the code path and narrow the failing scope.
+
+---
+
+## Phase 3: Hypothesis & Verification Plan
+
+Before changing code, state the hypothesis:
+
+```
+HYPOTHESIS:
+  Root cause: [specific statement]
+  Fix: [one-line description of change needed]
+  
+VERIFICATION PLAN:
+  1. Make the fix
+  2. Reproduce the original bug scenario → confirm it no longer occurs
+  3. Run related tests → confirm nothing else breaks
+  4. Check edge cases: [list 2-3]
+```
+
+---
+
+## Phase 4: Fix (Minimal Scope)
+
+Implement the fix as surgically as possible:
+- Change **only what is needed** to fix the root cause
+- Do not refactor unrelated code during a debug session
+- Add a comment explaining WHY the fix works (not just what it does)
+
 ```typescript
-// Targeted debug — remove before committing
-console.log('[DEBUG auth]', { session, userId, hasAccess });
+// FIX: [brief explanation of what root cause was and why this resolves it]
+// Previously: [what the code was doing wrong]
 ```
 
-### Step 5: Fix Root Cause
-Fix only what caused the bug. Do NOT:
-- Refactor adjacent code
-- Add workarounds (`setTimeout`, `try/catch` hiding errors)
-- Suppress TypeScript errors with `// @ts-ignore`
+---
 
-### Step 6: Write Regression Test
+## Phase 5: Test & Prevent Regression
+
+```
+1. [ ] Reproduce the original bug scenario → no longer occurs
+2. [ ] Existing tests still pass
+3. [ ] Add a specific test for this bug (regression test)
+4. [ ] Check adjacent code for the same pattern (don't fix just one instance)
+```
+
+Regression test naming:
 ```typescript
-// ✅ This test MUST have failed before the fix
-describe('edge case that caused the bug', () => {
-  it('returns null for empty user', () => {
-    expect(formatUser(null)).toBeNull(); // not throw
-  });
-});
+it('should not [bug behavior] when [condition]', () => { ... });
+// e.g.: it('should not throw when user is null', () => { ... })
 ```
 
-### Step 7: Report
+---
+
+## Delivery Format
+
+```markdown
+## 🐛 Bug Fixed: [Short Description]
+
+### Root Cause
+[One clear sentence describing the actual root cause]
+
+### Fix Applied
+| File | Lines Changed | What Changed |
+|------|---------------|--------------|
+
+### Why This Works
+[Brief explanation connecting the fix to the root cause]
+
+### Regression Test Added
+`[test file path]` — test name: "[test description]"
+
+### How to Verify
+[Steps to confirm the bug is gone]
 ```
-🐛 Bug Fix Report
-   Symptom: [what the user observed]
-   Root Cause: [exact cause]
-   Files Changed: [list]
-   Fix: [brief description]
-   Test Added: [test name]
-```
+
+> **Principle**: A bug fixed without a regression test is a bug that can return.

@@ -1,0 +1,17 @@
+{
+  "id": "fetch",
+  "label": "Fetch MCP",
+  "description": "Allows AI agents to fetch external URLs — for reading docs, APIs, and web resources.",
+  "credentialTier": "none",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-fetch"],
+  "env": {},
+  "capabilities": [
+    "http-fetch",
+    "url-read",
+    "api-exploration",
+    "docs-retrieval"
+  ],
+  "profiles": ["react-vite", "nextjs", "node-api", "python-fastapi"],
+  "notes": "Zero-config. Network access only. No write capabilities."
+}

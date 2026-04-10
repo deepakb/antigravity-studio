@@ -1,0 +1,10 @@
+{
+  "id": "vscode",
+  "description": "VS Code (GitHub Copilot) MCP format adapter. Output key is 'servers', entries require 'type: stdio'.",
+  "outputKey": "servers",
+  "requiresType": true,
+  "typeValue": "stdio",
+  "destination": ".vscode/mcp.json",
+  "envStyle": "object",
+  "notes": "VS Code uses 'servers' (not 'mcpServers'). Each entry needs type:'stdio' explicitly declared."
+}

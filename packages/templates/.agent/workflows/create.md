@@ -1,81 +1,142 @@
 ---
-description: create — full-stack TypeScript feature implementation with test coverage
+description: create — implement a new feature from scratch using the appropriate specialist agent(s)
 ---
 
 # /create Workflow
 
-> **Purpose**: Implement a new feature end-to-end, from types to tests, following clean architecture and the project's established patterns.
+> **Purpose**: Implement a new, well-scoped feature with the right specialist(s), using the project's established patterns and passing all quality gates before delivery.
 
-## Prerequisites
-Run `/blueprint` first for any feature touching 2+ domains. For small, isolated changes, `/create` can be used directly.
+## 🎯 When to Use
 
-## Execution Steps
+Use `/create` when:
+- Adding a new feature to an **existing** codebase
+- Complexity is **Simple or Compound** (not Epic — use `/orchestrate` for Epic)
+- Requirements are reasonably clear
+- Scope is bounded: 1-5 files, 1-2 domains
 
-### Step 1: Understand Context
-Before writing any code:
-- [ ] Read the relevant existing files (similar features, shared utilities)
-- [ ] Check the current database schema (`prisma/schema.prisma`)
-- [ ] Understand the auth model in use
-- [ ] Identify reusable components or utilities to leverage
+> If requirements are unclear or scope is large → run `/blueprint` first.
 
-### Step 2: Types First
+---
+
+## Pre-Flight Checklist (Before Writing Code)
+
+```
+1. [ ] Identify correct agent(s) from .agent/AGENTS.md routing table
+2. [ ] Announce agent + skills
+3. [ ] Confirm complexity (Simple = 1 agent | Compound = 2-3 agents)
+4. [ ] Check if existing patterns apply (search codebase first)
+5. [ ] Confirm TypeScript types for the feature exist or will be created first
+```
+
+---
+
+## Phase 1: Understand the Codebase First
+
+Before writing anything, search for relevant existing patterns:
+
+```
+🔍 Searching {{name}} codebase for:
+├── Existing similar features (to follow established patterns)
+├── Related components / services / routes already present
+├── Auth patterns (if this feature is protected)
+├── Data access patterns (repository vs. direct)
+└── Test patterns (how are similar features tested?)
+```
+
+Report findings:
+```
+Found: [what exists that's relevant]
+Pattern to follow: [specific file/pattern to replicate]
+New files needed: [list]
+```
+
+---
+
+## Phase 2: Clarify (Only If Needed)
+
+Ask **at most 2 targeted questions** if requirements are ambiguous. Do not over-ask.
+
+Good questions:
+- "Should this feature be accessible to all users or only [role]?"
+- "Should the data persist to the database or is client-state sufficient?"
+- "Should I follow the same pattern as [existing-feature] or create a new one?"
+
+Bad questions (do not ask):
+- "What color should the button be?" (decide — follow design system)
+- "Which library should I use?" (use what's already in package.json)
+- "Do you want TypeScript?" (always TypeScript)
+
+---
+
+## Phase 3: Implementation (Strict Order)
+
+### Step 1: Types
 ```typescript
-// ALWAYS define types before implementation
-// src/types/[feature].ts
-export interface Post {
-  id: string;
-  title: string;
-  content: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface CreatePostInput {
-  title: string;
-  content: string;
-}
+// types/[feature-name].ts (or extend existing lib/types.ts)
+export interface [Feature] { ... }
+export interface Create[Feature]Input { ... }
 ```
 
-### Step 3: Database Layer (if needed)
-```
-1. Add/modify Prisma schema
-2. Run: npx prisma migrate dev --name add_post_table
-3. Run: npx prisma generate
-```
-
-### Step 4: Backend (Data → Service → Route)
-Order: Repository → Service → Route Handler → Validation
-- Repository: pure Prisma calls, no business logic
-- Service: business rules, validation, cross-repo calls
-- Route Handler: parse request, call service, format response
-
-### Step 5: Frontend (State → Components → Page)
-Order: Types → Hooks → Components → Page
-- Hooks: data fetching (React Query) or server action connection
-- Components: pure UI, receive data via props
-- Page: composition of components
-
-### Step 6: Tests
-Write tests for every new function/component:
-```bash
-npm run test        # Unit + integration
-npm run test:e2e    # Playwright happy path
+### Step 2: Data Layer (if needed)
+```typescript
+// lib/repositories/[feature].ts  OR  lib/db/[feature].ts
+export async function get[Feature](id: string): Promise<[Feature]> { ... }
+export async function create[Feature](input: Create[Feature]Input): Promise<[Feature]> { ... }
 ```
 
-### Step 7: Quality Gates
-```bash
-npm run typecheck   # Zero TypeScript errors
-npm run lint        # Zero ESLint warnings
-npm run build       # Must build successfully
+### Step 3: Business Logic / API (if needed)
+```typescript
+// app/api/[feature]/route.ts  OR  lib/services/[feature].ts
+// Always: validate input (Zod) → auth guard → call repository → return response
 ```
 
-### Step 8: Summary
-After completion, output:
+### Step 4: UI Components
+```tsx
+// components/[FeatureName]/index.tsx   (or app/[route]/page.tsx)
+// Server Component first (data fetch) → minimize 'use client'
 ```
-✅ Feature: [Name]
-   Files created: [list]
-   Files modified: [list]
-   Tests added: [count]
-   Coverage: [%]
+
+### Step 5: Tests
+```typescript
+// __tests__/[feature].test.ts  OR  [feature].spec.ts
+// At minimum: happy path + one error case
+```
+
+---
+
+## Phase 4: Quality Gate Check
+
+Before delivery, mentally validate:
+
+| Gate | Check |
+|------|-------|
+| TypeScript | No errors, no `any` |
+| Security | Auth checks present, inputs validated |
+| Accessibility | Interactive elements have labels, keyboard accessible |
+| Tests | At least 1 test covering the core logic |
+
+---
+
+## Delivery Format
+
+```markdown
+## ✅ Created: [Feature Name]
+
+**Agent**: @[agent-name]
+
+### Files
+| File | Action | Notes |
+|------|--------|-------|
+| ... | CREATE/MODIFY | ... |
+
+### Usage
+\`\`\`tsx
+// How to use the new feature
+\`\`\`
+
+### Setup
+[Any migrations / env vars / config needed]
+
+### Test It
+[How to verify it works — manual steps or test command]
 ```

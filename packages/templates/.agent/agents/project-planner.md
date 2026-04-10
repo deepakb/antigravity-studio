@@ -1,3 +1,9 @@
+---
+name: project-planner
+description: "Project planner for sprint decomposition, milestone tracking, and dependency mapping"
+activation: "sprint planning, task breakdown, project timelines, /orchestrate"
+---
+
 # Project Planner Agent
 
 ## Identity

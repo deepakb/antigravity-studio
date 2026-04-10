@@ -1,150 +1,29 @@
-# SKILL: Monorepo with Turborepo
+---
+name: monorepo-turborepo
+description: "Managing complex, multi-package monorepos with Turborepo for high-velocity teams."
+---
+
+# SKILL: Enterprise Turborepo Workspaces
 
 ## Overview
-Enterprise-grade **Turborepo** monorepo setup for TypeScript projects. Load when architecting multi-app workspaces or working with Turbo configuration.
+Managing complex, multi-package monorepos with Turborepo for high-velocity teams.
 
-## Project Structure
-```
-my-monorepo/
-├── apps/
-│   ├── web/                    ← Next.js customer web app
-│   ├── admin/                  ← Next.js admin dashboard
-│   └── mobile/                 ← Expo React Native app
-├── packages/
-│   ├── ui/                     ← Shared React component library
-│   ├── config/
-│   │   ├── eslint-config/      ← Shared ESLint config
-│   │   ├── tsconfig/           ← Shared TypeScript configs
-│   │   └── tailwind-config/    ← Shared Tailwind preset
-│   ├── database/               ← Prisma schema + client wrapper
-│   ├── auth/                   ← Shared Auth.js config
-│   └── utils/                  ← Shared utilities (validators, formatters)
-├── turbo.json
-└── package.json (workspace root)
-```
+## 1. Remote Caching
+- **Vercel Remote Cache**: Share build artifacts across the whole team and CI/CD.
+- **Zero-Build CI**: If code hasn't changed, CI should take 0 seconds (Full Cache Hit).
 
-## turbo.json Configuration
-```json
-{
-  "$schema": "https://turborepo.com/schema.json",
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],      // Build deps first (topological sort)
-      "outputs": [".next/**", "dist/**", ".expo/**"],
-      "cache": true
-    },
-    "typecheck": {
-      "dependsOn": ["^build"],
-      "outputs": [],
-      "cache": true
-    },
-    "lint": {
-      "outputs": [],
-      "cache": true
-    },
-    "test": {
-      "outputs": ["coverage/**"],
-      "cache": true,
-      "env": ["DATABASE_URL_TEST"]
-    },
-    "test:e2e": {
-      "dependsOn": ["build"],
-      "outputs": ["playwright-report/**"],
-      "cache": false                 // Always run E2E fresh
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true             // Long-running dev servers
-    }
-  }
-}
-```
+## 2. Internal Package Patterns
+- **Shared Client (Prisma)**: Don't export the client; export the schema and types. Each app instantiates its own client to avoid connection pool exhaustion.
+- **Config Inheritance**: Packages should inherit from a base `@repo/tsconfig` or `@repo/eslint-config` to ensure zero drift.
 
-## Root package.json (pnpm workspaces)
-```json
-{
-  "name": "my-monorepo",
-  "private": true,
-  "packageManager": "pnpm@9.0.0",
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "typecheck": "turbo run typecheck",
-    "lint": "turbo run lint",
-    "test": "turbo run test",
-    "test:e2e": "turbo run test:e2e",
-    "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
-  },
-  "devDependencies": {
-    "turbo": "latest",
-    "prettier": "^3.0.0"
-  }
-}
-```
+## 3. Parallel Execution & Pipelines
+- **Task Dependencies**: Define strict `dependsOn` in `turbo.json` (e.g., `build` depends on `^build`).
+- **Persistent Workers**: Use `persistent: true` for dev servers to keep them running during incremental builds.
 
-## Shared TypeScript Config
-```json
-// packages/config/tsconfig/base.json
-{
-  "compilerOptions": {
-    "strict": true,
-    "exactOptionalPropertyTypes": true,
-    "noUncheckedIndexedAccess": true,
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "moduleDetection": "force",
-    "isolatedModules": true,
-    "skipLibCheck": true
-  }
-}
-```
+## 4. Package Boundaries & Exports
+- **Barrel-only Exports**: Use `exports` in `package.json` to strictly control what internals are accessible to other packages.
+- **Type-only Imports**: Enforce `import type` crossing package boundaries to reduce bundle size and circular deps.
 
-## Shared UI Package
-```typescript
-// packages/ui/package.json
-{
-  "name": "@monorepo/ui",
-  "exports": {
-    ".": { "import": "./src/index.ts" },
-    "./button": { "import": "./src/components/Button/index.ts" }
-  },
-  "peerDependencies": { "react": "^19.0.0", "typescript": ">=5.0.0" }
-}
-
-// packages/ui/src/index.ts — curated public API
-export { Button } from './components/Button';
-export { Input } from './components/Input';
-export { Badge } from './components/Badge';
-export type { ButtonProps } from './components/Button';
-```
-
-## Internal Package Usage
-```json
-// apps/web/package.json
-{
-  "dependencies": {
-    "@monorepo/ui": "workspace:*",
-    "@monorepo/database": "workspace:*",
-    "@monorepo/auth": "workspace:*"
-  }
-}
-```
-
-## Key Commands
-```bash
-# Build everything
-pnpm turbo build
-
-# Build only the web app and its dependencies
-pnpm turbo build --filter=web
-
-# Dev mode for mobile app only
-pnpm turbo dev --filter=mobile
-
-# Run tests in packages that changed since main
-pnpm turbo test --filter=[main]
-
-# Graph the task pipeline (visual debugging)
-pnpm turbo build --graph
-```
+## 5. Incremental Adoption
+- Moving from a monolith to a monorepo? Start by extracting `utils` and `types`.
+- Use `turbo prune` to create minimal Docker builds for specific workspace apps.

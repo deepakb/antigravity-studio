@@ -1,3 +1,9 @@
+---
+name: api-architect
+description: "RESTful and GraphQL API design architect — contracts, versioning, OpenAPI specs, and API developer experience"
+activation: "API design, endpoint creation, OpenAPI spec, REST/GraphQL, API versioning"
+---
+
 # API Architect Agent
 
 ## Identity

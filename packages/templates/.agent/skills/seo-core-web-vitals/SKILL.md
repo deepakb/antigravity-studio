@@ -1,105 +1,42 @@
-# SKILL: SEO & Core Web Vitals
+---
+name: seo-core-web-vitals
+description: "Hardened SEO and Core Web Vitals standards for high-visibility enterprise apps. Focuses on Semantic Discovery, LCP Performance, and Metadata Integr..."
+---
+
+# SKILL: Enterprise SEO & Core Web Vitals
 
 ## Overview
-Technical SEO and Core Web Vitals optimization for Next.js 15 applications. Load for SEO audits, performance work, or metadata implementation.
+Hardened **SEO** and **Core Web Vitals** standards for high-visibility enterprise apps. Focuses on **Semantic Discovery**, **LCP Performance**, and **Metadata Integrity**.
 
-## Core Web Vitals (2025 Thresholds)
-| Metric | What it is | Good | Needs Work | Poor |
-|---|---|---|---|---|
-| **LCP** | Largest Contentful Paint | < 2.5s | 2.5–4s | > 4s |
-| **INP** | Interaction to Next Paint | < 200ms | 200–500ms | > 500ms |
-| **CLS** | Cumulative Layout Shift | < 0.1 | 0.1–0.25 | > 0.25 |
-| **TTFB** | Time to First Byte | < 800ms | 800ms–1.8s | > 1.8s |
+## 1. Semantic Discovery (HTML5)
+Assist search engines in understanding your hierarchy.
+- **Rule**: Exactly ONE `<h1>` per page. Use `<h2>`–`<h6>` for nested sections.
+- **JSON-LD**: Use Schema.org structured data (Product, Organization, Article) for "Rich Snippets" in search results.
 
-## LCP Quick Wins
-```tsx
-// 1. Add priority to your hero image (most impactful single change)
-<Image src="/hero.webp" alt="..." priority fetchPriority="high" />
+## 2. Core Web Vitals (CWV)
+- **LCP (Largest Contentful Paint)**: Keep under 2.5s. Optimize hero images.
+- **CLS (Cumulative Layout Shift)**: Keep under 0.1. Set explicit width/height for all media.
+- **INP (Interaction to Next Paint)**: Keep under 200ms. Avoid recursive JS updates.
 
-// 2. Preconnect to critical third-party origins
-// app/layout.tsx head:
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="dns-prefetch" href="https://cdn.example.com" />
+## 3. Metadata Orchestration (Next.js)
+- **Static**: Define `metadata` objects in `layout.tsx` for Sitewide defaults (OpenGraph, Twitter).
+- **Dynamic**: Use `generateMetadata` in `page.tsx` for dynamic SEO (e.g., specific Product titles/descriptions).
 
-// 3. Self-host fonts (avoids 2 extra DNS lookups + stylesheet requests)
-import { Inter } from 'next/font/google';
-const inter = Inter({ subsets: ['latin'], display: 'swap' });
-// next/font pre-loads fonts and eliminates layout shift
-```
+## 4. Canonicalization & Crawling
+- **Canonical Tags**: Always define a canonical URL to prevent SEO penalties for duplicate content (e.g., `?ref=...`).
+- **Robots.txt & Sitemap**: Automatically generate `sitemap.xml` for all static and dynamic routes.
 
-## CLS Quick Wins
-```tsx
-// 1. Always set width + height on images (prevents reflow)
-<Image src="/photo.jpg" alt="..." width={800} height={600} /> // ← aspect ratio known upfront
+## 5. Accessibility for SEO
+- **Alt Text**: Descriptive alt text isn't just for screen readers; it's how Google understands image content.
+- **Link Text**: Use descriptive links ("Read the Product Guide") instead of generic ones ("Click here").
 
-// 2. Reserve space for dynamic content (ads, embeds)
-<div style={{ minHeight: '250px' }}>
-  <AdComponent />
-</div>
+## Skills to Load
+- `nextjs-seo-optimization`
+- `google-search-console-best-practices`
+- `accessibility-wcag`
 
-// 3. Avoid inserting content above existing content
-// Banners/notifications below hero, not above
+---
 
-// 4. Use font-display: swap (next/font handles this automatically)
-```
+## Verification Scripts (MANDATORY)
 
-## INP Quick Wins
-```tsx
-// INP fires on the interaction that feels slowest
-// Identify: "Long Animation Frames" in Chrome DevTools > Performance
-
-// 1. Break up long tasks (> 50ms blocks the main thread)
-const [filtered, setFiltered] = useState(items);
-const [isPending, startTransition] = useTransition(); // Defer heavy work
-const handleSearch = (q: string) => {
-  startTransition(() => setFiltered(items.filter(i => i.name.includes(q))));
-};
-
-// 2. Avoid synchronous work in event handlers
-// Move recalculations to useEffect or startTransition
-```
-
-## Site Structure for SEO
-```tsx
-// Every page needs:
-// 1. Unique, keyword-rich <title>
-// 2. Compelling <meta description> (120–160 chars)
-// 3. One <h1> — matches or complements title
-// 4. OpenGraph + Twitter card tags
-// 5. Canonical URL
-
-// 6. Structured data for rich results:
-<script type="application/ld+json">{JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'Brand Name',
-  url: 'https://yoursite.com',
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: 'https://yoursite.com/search?q={search_term_string}',
-    'query-input': 'required name=search_term_string',
-  },
-})}</script>
-```
-
-## Technical SEO Checklist
-- [ ] XML Sitemap at `/sitemap.xml`
-- [ ] `robots.txt` blocking `/api/`, `/admin/`, `/dashboard/`
-- [ ] Canonical URL on all pages
-- [ ] No duplicate content (pagination canonical, www vs. non-www redirect)
-- [ ] All 404 pages return HTTP 404 (not 200)
-- [ ] All redirects are 301 (permanent), not 302
-- [ ] HTTPS enforced (HSTS header)
-- [ ] Mobile-responsive (`viewport` meta tag)
-- [ ] Core Web Vitals all "Good" in Google Search Console
-
-## Measuring
-```bash
-# Local measurement
-npx lighthouse http://localhost:3000 --view
-
-# Continuous monitoring with Vercel Speed Insights
-# Install in app/layout.tsx:
-import { SpeedInsights } from '@vercel/speed-insights/next';
-<SpeedInsights />
-```
+- **SEO Linter**: `studio run seo-linter`

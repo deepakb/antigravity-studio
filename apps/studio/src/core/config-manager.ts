@@ -16,14 +16,48 @@ const DEFAULT_CONFIG: AgStudioConfig = {
     scripts: [],
   },
   customized: [],
-  telemetry: false,
+  installedHashes: {},
 };
+
+/**
+ * Migrate an older .agstudio.json to the current schema.
+ * Safe to call on any config object — only modifies stale / missing fields.
+ */
+export function migrateConfig(config: Record<string, unknown>): AgStudioConfig {
+  const raw = { ...config };
+
+  // v1 → v2: remove dead telemetry field
+  if ('telemetry' in raw) {
+    delete raw['telemetry'];
+  }
+
+  const c = { ...DEFAULT_CONFIG, ...raw } as AgStudioConfig;
+
+  // Ensure installed sub-keys exist (resilient against partial writes)
+  c.installed = {
+    agents:    Array.isArray(c.installed?.agents)    ? c.installed.agents    : [],
+    skills:    Array.isArray(c.installed?.skills)    ? c.installed.skills    : [],
+    workflows: Array.isArray(c.installed?.workflows) ? c.installed.workflows : [],
+    scripts:   Array.isArray(c.installed?.scripts)   ? c.installed.scripts   : [],
+  };
+
+  // Ensure customized is an array
+  if (!Array.isArray(c.customized)) c.customized = [];
+
+  // Ensure installedHashes is an object
+  if (typeof c.installedHashes !== 'object' || c.installedHashes === null) {
+    c.installedHashes = {};
+  }
+
+  return c;
+}
 
 export function readConfig(cwd: string = process.cwd()): AgStudioConfig | null {
   const configPath = path.join(cwd, CONFIG_FILE);
   if (!existsSync(configPath)) return null;
   try {
-    return JSON.parse(readFileSync(configPath, "utf-8")) as AgStudioConfig;
+    const raw = JSON.parse(readFileSync(configPath, "utf-8")) as Record<string, unknown>;
+    return migrateConfig(raw);
   } catch {
     return null;
   }
@@ -41,7 +75,7 @@ export function createConfig(
   project: string,
   profile: ProjectProfile,
   installed: AgStudioConfig["installed"],
-  telemetry: boolean = false
+  hashes: Record<string, string> = {}
 ): AgStudioConfig {
   return {
     ...DEFAULT_CONFIG,
@@ -49,7 +83,7 @@ export function createConfig(
     profile,
     project,
     installed,
-    telemetry,
+    installedHashes: hashes,
   };
 }
 

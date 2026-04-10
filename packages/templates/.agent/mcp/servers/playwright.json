@@ -1,0 +1,18 @@
+{
+  "id": "playwright",
+  "label": "Playwright Browser MCP",
+  "description": "Gives AI agents a real browser for visual testing, screenshots, and end-to-end interaction.",
+  "credentialTier": "none",
+  "command": "npx",
+  "args": ["@playwright/mcp@latest"],
+  "env": {},
+  "capabilities": [
+    "browser-automation",
+    "screenshot",
+    "e2e-testing",
+    "visual-regression",
+    "dom-inspection"
+  ],
+  "profiles": ["react-vite", "nextjs", "node-api"],
+  "notes": "Zero-config. Requires Node.js 18+. Will auto-download Playwright browsers on first run."
+}

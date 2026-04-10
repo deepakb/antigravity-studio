@@ -1,3 +1,8 @@
+---
+name: vercel-deployment
+description: "Production-grade Vercel deployment configuration for Next.js 15 applications. Load for deployment setup, environment configuration, or edge optimiz..."
+---
+
 # SKILL: Vercel Deployment
 
 ## Overview

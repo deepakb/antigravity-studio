@@ -1,103 +1,44 @@
-# SKILL: Accessibility (WCAG 2.2)
+---
+name: accessibility-wcag
+description: "High-integrity WCAG 2.2 AA implementation for enterprise TypeScript/React apps. Focuses on Keyboard Navigation, Screen Reader Efficiency, and Cogni..."
+---
+
+# SKILL: Enterprise Accessibility (WCAG 2.2)
 
 ## Overview
-Practical implementation guide for **WCAG 2.2 AA** accessibility compliance in TypeScript/React. This skill contains the most critical patterns with code-ready fixes.
+High-integrity **WCAG 2.2 AA** implementation for enterprise TypeScript/React apps. Focuses on **Keyboard Navigation**, **Screen Reader Efficiency**, and **Cognitive Inclusivity**.
 
-## POUR Principles Checklist
+## 1. Advanced Keyboard Navigation (Focus Management)
+- **Focus Traps**: Must be used in Modals, Drawers, and Dialogs (use `Radix UI` or `React Focus Lock`).
+- **Skip Links**: Always include a `Skip to Content` link as the first tabable element.
+- **Visual Focus**: Never use `outline: none`. Use a high-contrast `:focus-visible` ring that respects the theme.
 
-### Perceivable
-```tsx
-// ✅ Non-text content: alt text
-<Image src="/chart.png" alt="Bar chart showing sales growth of 34% from Q1 to Q2 2025" />
-<Image src="/decorative-wave.svg" alt="" role="presentation" />
+## 2. Screen Reader Orchestration (ARIA)
+- **Landmarks**: Use `<header>`, `<nav>`, `<main>`, `<section>`, and `<footer>` correctly to allow easy navigation.
+- **Dynamic Updates**: Use `aria-live="polite"` for non-disruptive notifications (e.g., "Item added to cart") and `aria-live="assertive"` for critical failures.
+- **Descriptive Labels**: Use `aria-labelledby` and `aria-describedby` to link inputs with error messages and hints.
 
-// ✅ Captions for video
-<video controls>
-  <track kind="captions" src="/captions-en.vtt" srclang="en" label="English" default />
-</video>
+## 3. WCAG 2.2 Specifics (New Criteria)
+- **Focus Appearance**: Ensure the focus indicator has a minimum area and contrast (2.4.11).
+- **Target Size (Minimum)**: All interactive targets must be at least 24x24 CSS pixels (2.5.8).
+- **Consistent Help**: Help mechanisms (Chat, Docs, Contact) must be in the same relative location (3.2.6).
 
-// ✅ Color is NOT the sole indicator
-// ❌ "Required fields are shown in red"
-// ✅ "Required fields are marked with * and shown in red"
-<label>Email <span aria-label="required" className="text-red-500">*</span></label>
-```
+## 4. Semantic Integrity & Form Safety
+- **Native over ARIA**: Use `<button>` instead of `<div role="button">`.
+- **Form Validation**: Errors must be announced immediately. The first invalid field should receive focus on failed submission.
+- **Grouping**: Use `<fieldset>` and `<legend>` for groups of related inputs (e.g., Address, Credit Card info).
 
-### Operable
-```tsx
-// ✅ All interactive elements keyboard accessible
-// ✅ Focus visible at all times
-.focus-ring {
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2;
-}
+## 5. Automated vs Manual Testing
+- **Automated**: Use `axe-core` or `Playwright` to catch 40% of issues.
+- **Manual**: Verify "No Keyboard Trap", "Logical Tab Order", and "Zoom to 200%" manually.
 
-// ✅ Skip navigation link
-<a
-  href="#main-content"
-  className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded"
->
-  Skip to main content
-</a>
-<main id="main-content">...</main>
+## Skills to Load
+- `design-tokens-accessibility`
+- `react-testing-library-a11y`
+- `shadcn-radix-ui`
 
-// ✅ No keyboard trap (except modals — which intentionally trap)
-// ✅ No time limits (or pauseable/extendable)
-// ✅ Avoid flashing content (< 3 flashes per second)
-```
+---
 
-### Understandable
-```tsx
-// ✅ Language declared on html element
-<html lang="en">
+## Verification Scripts (MANDATORY)
 
-// ✅ Error suggestion — tell users HOW to fix errors
-// ❌ "Invalid input"
-// ✅ "Email must include @. Example: user@example.com"
-<p role="alert">Email must include @. Example: user@example.com</p>
-
-// ✅ Consistent navigation — same menu, same order, on every page
-// ✅ Predictable behavior — clicking a link navigates, not plays audio
-```
-
-### Robust
-```tsx
-// ✅ Valid HTML — won't crash assistive technology
-// ✅ Name, Role, Value for all components
-<button
-  type="button"
-  aria-label="Close notification"  // Name
-  aria-pressed={isExpanded}        // State
-  aria-expanded={isExpanded}       // Property
-  role="button"                    // Role (implicit for <button>)
-  onClick={handleClose}
->
-  <X aria-hidden="true" />         // Hide icon from screen reader
-</button>
-```
-
-## ARIA Patterns Quick Reference
-```tsx
-// Alert — urgent, interrupts screen reader
-<div role="alert" aria-live="assertive">Error: Your session expired.</div>
-
-// Status — non-urgent announcement
-<div role="status" aria-live="polite">Your changes have been saved.</div>
-
-// Form with complete ARIA
-<form>
-  <label htmlFor="email">Email <span aria-label="required">*</span></label>
-  <input
-    id="email"
-    type="email"
-    required
-    aria-required="true"
-    aria-describedby="email-hint email-error"
-    aria-invalid={!!errors.email}
-  />
-  <p id="email-hint" className="text-sm text-muted">Enter your work email address</p>
-  {errors.email && (
-    <p id="email-error" role="alert" className="text-sm text-destructive">
-      {errors.email}
-    </p>
-  )}
-</form>
-```
+- **A11y Audit**: `studio run accessibility-audit`

@@ -1,0 +1,9 @@
+{
+  "id": "cursor",
+  "description": "Cursor IDE MCP format adapter. Output key is 'mcpServers', no type field required.",
+  "outputKey": "mcpServers",
+  "requiresType": false,
+  "destination": ".cursor/mcp.json",
+  "envStyle": "object",
+  "notes": "Cursor uses 'mcpServers'. Identical structure to Claude and Windsurf."
+}

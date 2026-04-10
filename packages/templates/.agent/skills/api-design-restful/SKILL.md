@@ -1,113 +1,47 @@
-# SKILL: API Design (RESTful)
+---
+name: api-design-restful
+description: "Standards for building high-scale, versioned RESTful APIs with TypeScript. Focuses on OpenAPI 3.1, Versioning, and Error Consistency."
+---
+
+# SKILL: Enterprise API Design (RESTful)
 
 ## Overview
-RESTful API design principles and TypeScript patterns for building consistent, scalable, and developer-friendly APIs.
+Standards for building high-scale, versioned **RESTful APIs** with TypeScript. Focuses on **OpenAPI 3.1**, **Versioning**, and **Error Consistency**.
 
-## URL Design
-```
-Resource: Users
-Collection: GET    /api/v1/users              → list users
-Item:       GET    /api/v1/users/:id          → get one user
-Nested:     GET    /api/v1/users/:id/posts    → get user's posts
-Create:     POST   /api/v1/users
-Update all: PUT    /api/v1/users/:id
-Update part:PATCH  /api/v1/users/:id
-Delete:     DELETE /api/v1/users/:id
+## 1. OpenAPI 3.1 Specification
+Every API must have a machine-readable contract.
+- **Protocol**: Generate OpenAPI (Swagger) specs from your Zod schemas.
+- **Benefit**: Auto-generates client-side SDKs, documentation, and ensures the backend and frontend never drift.
 
-Rules:
-✅ Plural nouns: /users not /user
-✅ Lowercase: /blog-posts not /blogPosts
-✅ Hyphens for multi-word: /order-items
-✅ Version in path: /api/v1/
-❌ Verbs in URL: /getUser, /createPost, /deleteAccount
-❌ Nested > 2 levels deep: /users/:id/posts/:id/comments → /comments?postId=
-```
+## 2. Strategic Versioning
+Never break a consumer in production.
+- **Pattern**: Use URL versioning `/api/v1/resource` or Header versioning `Accept: application/vnd.api+json; version=1.0`.
+- **Deprecation**: Mark old versions as deprecated in the OpenAPI spec before removal.
 
-## Standard Response Envelope
-```typescript
-// Success response
-type SuccessResponse<T> = {
-  data: T;
-  meta?: {
-    total?: number;
-    page?: number;
-    pageSize?: number;
-    hasNextPage?: boolean;
-    nextCursor?: string;
-  };
-};
-
-// Error response
-type ErrorResponse = {
-  error: {
-    code: string;           // Machine-readable: 'NOT_FOUND', 'VALIDATION_ERROR'
-    message: string;        // Human-readable: 'User not found'
-    details?: unknown;      // Field-level validation errors
-    requestId?: string;     // For support/debugging correlation
-  };
-};
-```
-
-## Filtering, Sorting & Pagination
-```
-GET /api/v1/posts?
-  status=published          ← filter
-  &category=tech            ← filter
-  &q=typescript             ← text search
-  &sort=createdAt           ← sort field
-  &order=desc               ← sort direction (asc/desc)
-  &cursor=eyJpZCI6IjEwMCJ9  ← cursor pagination (preferred)
-  
-Offset pagination (simpler but less efficient at scale):
-  &page=2&pageSize=20
-```
-
-## Idempotency for Critical Operations
-```typescript
-// ✅ For payment/charge endpoints — prevent double-charging
-export async function POST(request: NextRequest) {
-  const idempotencyKey = request.headers.get('Idempotency-Key');
-  if (!idempotencyKey) {
-    return NextResponse.json({ error: { code: 'MISSING_IDEMPOTENCY_KEY' } }, { status: 400 });
-  }
-
-  // Check if this key was already processed
-  const existing = await redis.get(`idem:${idempotencyKey}`);
-  if (existing) return NextResponse.json(existing); // Return cached response
-
-  const result = await processPayment(body);
-
-  // Cache result for 24 hours
-  await redis.setex(`idem:${idempotencyKey}`, 86400, result);
-  return NextResponse.json(result, { status: 201 });
+## 3. Global Error Consistency
+API errors must follow a predictable, structured format.
+- **Standard**: RFC 7807 (Problem Details for HTTP APIs).
+- **Format**:
+```json
+{
+  "type": "https://example.com/probs/validation-error",
+  "title": "Your request is invalid.",
+  "status": 400,
+  "detail": "The 'email' field must be a valid email address.",
+  "errors": { "email": ["Invalid email format"] }
 }
 ```
 
-## Versioning Strategy
-```typescript
-// URL versioning (recommended for REST)
-app/api/v1/users/route.ts  → first version
-app/api/v2/users/route.ts  → breaking changes go here
+## 4. Rate Limiting & Quotas
+Protect the system from high-volume abuse or bugs.
+- **Implementation**: Fixed Window or Token Bucket.
+- **Headers**: Expose `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset`.
 
-// Version negotiation via Accept header (advanced)
-request.headers.get('Accept') === 'application/vnd.api+json; version=2'
+## 5. Idempotency (POST/PUT/DELETE)
+- **Rule**: Multiple identical requests must have the same effect as a single request.
+- **Safety**: For non-idempotent operations (like creating a payment), require an `Idempotency-Key` header.
 
-// Deprecation headers (tell clients to upgrade)
-Response headers:
-  Deprecation: Sat, 31 Dec 2025 00:00:00 GMT  ← when v1 is removed
-  Sunset: Sat, 31 Dec 2025 00:00:00 GMT
-  Link: <https://api.example.com/v2/users>; rel="successor-version"
-```
-
-## Error Codes Reference
-```typescript
-export const API_ERRORS = {
-  UNAUTHORIZED: { code: 'UNAUTHORIZED', status: 401 },
-  FORBIDDEN:    { code: 'FORBIDDEN',    status: 403 },
-  NOT_FOUND:    { code: 'NOT_FOUND',    status: 404 },
-  CONFLICT:     { code: 'CONFLICT',     status: 409 },  // Duplicate email
-  VALIDATION:   { code: 'VALIDATION_ERROR', status: 400 },
-  RATE_LIMITED: { code: 'RATE_LIMITED', status: 429 },
-  SERVER_ERROR: { code: 'INTERNAL_ERROR', status: 500 }, // Never expose details
-} as const;
-```
+## Skills to Load
+- `rest-api-best-practices`
+- `security-authorization-a01`
+- `input-validation-sanitization`

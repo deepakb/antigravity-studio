@@ -1,111 +1,223 @@
 ---
-description: refactor-solid — refactor existing code to follow SOLID, DRY, and clean architecture principles
+description: refactor-solid — deep codebase refactoring using SOLID, DRY, Clean Architecture, and DDD principles
 ---
 
 # /refactor-solid Workflow
 
-> **Purpose**: Refactor existing code to apply SOLID principles, reduce coupling, and improve maintainability — without adding new features.
+> **Purpose**: Systematically refactor code to apply SOLID principles, eliminate duplicated logic, and enforce clean architecture boundaries — without adding new features or breaking existing behavior.
 
-## Activate: @enterprise-architect + @tech-lead Agents
+## 🤖 Activation
+```
+🤖 Applying @enterprise-architect + @tech-lead + loading solid-principles, clean-architecture, ddd skills...
+```
 
-## SOLID Principles Quick Reference
+---
+
+## Refactoring Philosophy
+
+**Rules that cannot be violated:**
+1. Run all tests before starting. If tests fail → fix before refactoring.
+2. Make ONE change at a time. Each change must be its own logical step.
+3. Never rename AND change logic in the same step.
+4. Tests must pass after every step. If they fail → revert, not patch.
+5. The public interface must not change (only internals).
+
+---
+
+## Phase 1: Code Smell Audit
+
+```
+🔍 REFACTORING AUDIT — [file/module]
+
+Code Smells Found:
+  [ ] God class/function (> ~200 lines, > 10 responsibilities)
+  [ ] Long parameter list (> 4 params → group into object)
+  [ ] Feature envy (class uses more of another class's data than its own)
+  [ ] Duplicate code (same logic in 2+ places)
+  [ ] Dead code (unused exports, commented-out blocks, unreachable paths)
+  [ ] Shotgun surgery (1 change requires editing N unrelated files)
+  [ ] Divergent change (1 class modified for N unrelated reasons)
+  [ ] Magic numbers/strings (unexplained literals)
+  [ ] Missing abstraction (repeated business rule without a name)
+  [ ] Direct DB access in components or route handlers (no repository)
+```
+
+---
+
+## Phase 2: SOLID Analysis
 
 ### S — Single Responsibility
-> A module should have one reason to change.
-
 ```typescript
-// ❌ WRONG — UserService does too much
+// Identify: functions/classes with multiple reasons to change
+
+// ❌ Violates SRP — UserService handles HTTP, business logic, DB, AND email
 class UserService {
-  getUser() { ... }
-  sendWelcomeEmail() { ... }
-  chargeSubscription() { ... }
-  logActivity() { ... }
+  async register(req: Request) {
+    const body = await req.json();           // HTTP parsing
+    if (!isValidEmail(body.email)) throw ...; // Validation
+    const user = await prisma.user.create(); // DB
+    await sendWelcomeEmail(user.email);      // Side effect
+    return Response.json(user);             // HTTP serialization
+  }
 }
 
-// ✅ CORRECT — each class has one responsibility
-class UserRepository { getUser() { ... } }
-class EmailService { sendWelcomeEmail() { ... } }
-class BillingService { chargeSubscription() { ... } }
+// ✅ SRP — each class has ONE reason to change
+// Route handler: handles HTTP (parsing, response)
+// UserService: business logic orchestration
+// UserRepository: data access
+// EmailService: email sending
 ```
 
 ### O — Open/Closed
-> Open for extension, closed for modification.
-
 ```typescript
-// ❌ Switch on type — must modify when adding new type
-function processPayment(type: 'stripe' | 'paypal') {
-  if (type === 'stripe') { ... }
-  if (type === 'paypal') { ... }
+// Identify: switch statements or if-chains that grow when adding new types
+
+// ❌ Add new payment provider → modify this function
+function processPayment(type: string, amount: number) {
+  if (type === 'stripe') return stripe.charge(amount);
+  if (type === 'paypal') return paypal.execute(amount);
+  // Adding apple pay means modifying this
 }
 
-// ✅ Strategy pattern — add providers without modifying this function
-interface PaymentProvider { charge(amount: number): Promise<void> }
-function processPayment(provider: PaymentProvider, amount: number) {
+// ✅ Strategy pattern — new provider = new class, zero modification here
+interface PaymentProvider {
+  charge(amount: number): Promise<{ transactionId: string }>;
+}
+async function processPayment(provider: PaymentProvider, amount: number) {
   return provider.charge(amount);
 }
 ```
 
 ### L — Liskov Substitution
-> Subtypes must be substitutable for their base types.
-
 ```typescript
-// ✅ Any implementation of IUserRepository can be swapped
-interface IUserRepository {
-  findById(id: string): Promise<User | null>;
+// Identify: subclass that can't fully substitute parent
+
+// ❌ Violates LSP — Square breaks Rectangle's invariants
+class Rectangle {
+  setWidth(w: number) { this.width = w; }
+  setHeight(h: number) { this.height = h; }
 }
-class PrismaUserRepository implements IUserRepository { ... }
-class InMemoryUserRepository implements IUserRepository { ... } // For tests
+class Square extends Rectangle {
+  setWidth(w: number) { this.width = this.height = w; } // Breaks Liskov!
+}
+
+// ✅ Use composition over inheritance, or use interfaces:
+interface Shape { area(): number; }
+class Rectangle implements Shape { ... }
+class Square implements Shape { ... }
 ```
 
 ### I — Interface Segregation
-> Don't force clients to depend on interfaces they don't use.
-
 ```typescript
-// ❌ WRONG — read-only consumers must get write methods too
-interface IUserService { getUser(): User; updateUser(): void; deleteUser(): void; }
+// Identify: interfaces with methods not all implementors need
 
-// ✅ CORRECT — segregated
-interface IUserReader { getUser(id: string): Promise<User | null> }
-interface IUserWriter { updateUser(id: string, data: Partial<User>): Promise<User> }
+// ❌ Read-only consumers forced to implement write methods
+interface IUserRepository {
+  getUser(id: string): Promise<User>;
+  createUser(input: CreateUserInput): Promise<User>;
+  deleteUser(id: string): Promise<void>;
+}
+
+// ✅ Segregated — readers only need reader interface
+interface IUserReader {
+  getUser(id: string): Promise<User | null>;
+  getUserByEmail(email: string): Promise<User | null>;
+}
+interface IUserWriter {
+  createUser(input: CreateUserInput): Promise<User>;
+  updateUser(id: string, data: Partial<User>): Promise<User>;
+  deleteUser(id: string): Promise<void>;
+}
 ```
 
 ### D — Dependency Inversion
-> Depend on abstractions, not concretions.
-
 ```typescript
-// ❌ WRONG — tightly coupled to Prisma
+// Identify: high-level modules importing concrete low-level implementations
+
+// ❌ Tightly coupled — cannot test without real DB
 class PostService {
-  private db = new PrismaClient(); // Cannot test without DB
+  private prisma = new PrismaClient(); // Concretion
+  async getPosts() { return this.prisma.post.findMany(); }
 }
 
-// ✅ CORRECT — injected abstraction
-class PostService {
-  constructor(private readonly posts: IPostRepository) {} // Injectable
+// ✅ Depends on abstraction — can inject InMemoryRepository in tests
+interface IPostRepository {
+  findMany(): Promise<Post[]>;
+  findById(id: string): Promise<Post | null>;
+  create(input: CreatePostInput): Promise<Post>;
 }
+
+class PostService {
+  constructor(private readonly posts: IPostRepository) {}
+  async getPosts() { return this.posts.findMany(); }
+}
+
+// Production: inject PrismaPostRepository
+// Tests: inject InMemoryPostRepository
 ```
 
-## Refactoring Execution Steps
+---
 
-### Step 1: Audit
+## Phase 3: Refactoring Execution
+
+Execute in strict order — never combine steps:
+
 ```
-- [ ] Identify all SOLID violations in the target file/module
-- [ ] List dependencies (what does this file import?)
-- [ ] List consumers (what imports this file?)
-- [ ] Run tests — record current passing count
+Step 1: Extract constants (replace magic numbers/strings)
+Step 2: Extract smaller functions from large ones (only rename)
+Step 3: Apply DRY — extract shared logic to utilities
+Step 4: Create interfaces for dependencies
+Step 5: Introduce repository pattern (if DB access in wrong layer)
+Step 6: Apply strategy/factory pattern (if switch/if-chains present)
+Step 7: Update dependency injection
+Step 8: Verify all tests pass
 ```
 
-### Step 2: Plan (no code yet)
-For each violation, state:
-- Violation type (S/O/L/I/D)
-- Current structure  
-- Proposed structure
-- Risk level (low/medium/high)
-
-### Step 3: Refactor Incrementally
-One principle at a time. Run tests after each change. Never refactor everything at once.
-
-### Step 4: Verify
+After each step:
 ```bash
-npm run test         # Same count, all green
-npm run typecheck    # Zero new errors
+npm run test        # Must pass
+npm run typecheck   # Must pass
+```
+
+---
+
+## Phase 4: Clean Architecture Enforcement
+
+```
+Layers (dependencies flow INWARD only):
+
+  Domain (Entities, Value Objects)
+    ← Use Cases (Application Services)
+      ← Interface Adapters (Repositories, Controllers)
+        ← Frameworks & Drivers (Prisma, Next.js, Express)
+
+Rules:
+  ❌ Domain NEVER imports from outer layers
+  ❌ Use Cases NEVER import from Next.js or Prisma directly
+  ✅ All DB access through Repository interfaces
+  ✅ All external services through abstraction interfaces
+```
+
+---
+
+## Delivery Format
+
+```markdown
+## 🔄 Refactored: [File/Module]
+
+**Principles Applied**: [S/O/L/I/D — which ones]
+**Pattern Introduced**: [Repository / Strategy / Factory / etc.]
+
+### Before → After
+| Smell | Location | Fix Applied |
+|-------|----------|-------------|
+| God class | UserService | Extracted to 3 classes |
+| Direct DB | route.ts | Repository pattern |
+
+### Test Results
+- Before: N passing
+- After: N passing (same count, zero regressions)
+
+### Architecture Impact
+[How this improves future development velocity or testability]
 ```

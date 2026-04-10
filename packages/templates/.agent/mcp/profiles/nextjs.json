@@ -1,0 +1,8 @@
+{
+  "id": "nextjs",
+  "description": "MCP profile for Next.js projects. Full stack — browser automation, fetch, GitHub, visual testing, and Vercel deploy.",
+  "inherits": "base",
+  "servers": ["playwright", "filesystem", "fetch"],
+  "optional": ["github", "chromatic", "vercel"],
+  "notes": "vercel MCP requires 3 credentials (VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID). Run `vercel link` first."
+}

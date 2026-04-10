@@ -1,0 +1,32 @@
+{
+  "id": "github",
+  "label": "GitHub MCP",
+  "description": "Gives AI agents access to GitHub repos, issues, PRs, and actions via the GitHub API.",
+  "credentialTier": "optional",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-github"],
+  "env": {
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+  },
+  "credentials": {
+    "GITHUB_PERSONAL_ACCESS_TOKEN": {
+      "description": "GitHub Personal Access Token with repo scope",
+      "howToGet": "https://github.com/settings/tokens/new?scopes=repo,read:org",
+      "required": false,
+      "placeholder": "ghp_xxxxxxxxxxxxxxxxxxxx"
+    }
+  },
+  "capabilities": {
+    "withCredentials": [
+      "repo-read",
+      "repo-write",
+      "issue-management",
+      "pr-review",
+      "actions-trigger",
+      "branch-management"
+    ],
+    "withoutCredentials": []
+  },
+  "profiles": ["react-vite", "nextjs", "node-api"],
+  "notes": "Disabled without token. Add GITHUB_PERSONAL_ACCESS_TOKEN to .env.local to activate."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "claude",
+  "description": "Claude Code MCP format adapter. Output key is 'mcpServers', written to .mcp.json at project root.",
+  "outputKey": "mcpServers",
+  "requiresType": false,
+  "destination": ".mcp.json",
+  "envStyle": "object",
+  "notes": "Claude Code reads .mcp.json at root. Same structure as Cursor."
+}

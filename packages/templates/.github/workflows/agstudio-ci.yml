@@ -1,0 +1,39 @@
+name: Antigravity Studio — AI Config Compliance
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+jobs:
+  agstudio-compliance:
+    name: AI Agent Config Compliance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Antigravity Studio
+        run: npm install -g @antigravity/studio
+
+      - name: Validate company config
+        run: studio company validate
+        continue-on-error: false
+
+      - name: Check for config drift
+        run: studio sync --check
+        # Exits 1 if any installed skill/agent is outdated vs the registry
+        # or if company-required skills are missing — blocks the PR
+
+      - name: Run workspace health check
+        run: studio doctor
+        continue-on-error: true
+        # Doctor reports but doesn't block — informational only
