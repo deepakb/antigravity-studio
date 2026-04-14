@@ -1,18 +1,35 @@
 # ⚡ Nexus Studio
 
-> **Enterprise AI Agent Orchestration CLI** — Deploy specialist AI agents, enforce coding standards, and run automated quality gates across any technology stack.
+> **The AI Dev OS for Every Team** — One `npx` command installs 29 specialist AI agents, 51 expert skill libraries, and 12 automated quality gates into any project. Works with Cursor, Windsurf, Copilot, and Claude Code — consistent AI behaviour across every developer on your team.
 
 [![npm version](https://img.shields.io/npm/v/@nexus/studio.svg)](https://www.npmjs.com/package/@nexus/studio)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org)
-[![Tests](https://img.shields.io/badge/tests-43%20passed-brightgreen)](#testing)
+[![Tests](https://img.shields.io/badge/tests-43%20passed-brightgreen)](#-testing)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
+
+---
+
+## 🗺️ Quick Navigation
+
+| I want to… | Go here |
+|---|---|
+| Bootstrap a new project in 60 seconds | [🚀 Quick Start](#-quick-start) |
+| Understand how the system works | [🏛️ Architecture](#️-architecture) |
+| See all 24 CLI commands | [💻 CLI Reference](#-cli-reference) |
+| Enforce standards across a team | [🏢 Enterprise Configuration](#-enterprise-configuration) |
+| Audit an existing project | [`studio doctor`](#studio-doctor) · [`studio validate`](#studio-validate) |
+| Browse agents, skills & profiles | [🤖 Agents](#-specialist-agents-29) · [🧠 Skills](#-expert-skills-51) · [📦 Profiles](#-supported-stacks--profiles) |
+| Contribute a skill or agent | [🤝 Contributing](#-contributing) |
 
 ---
 
 ## What Is Nexus Studio?
 
 Nexus Studio is a polyglot enterprise CLI that installs a **local AI agent system** (`.agent/`) into any project. It gives every developer on your team the same specialist AI agents, skill libraries, and automated quality gates — regardless of IDE, framework, or language.
+
+**The problem it solves:** Every developer has a different AI setup — one uses Cursor with custom rules, another Copilot with no context, another Claude with a half-written system prompt. The result: inconsistent AI behaviour across the team. Nexus Studio fixes this with a **single canonical `.agent/` source of truth** that every IDE generates its config from.
 
 ```
                          ┌─────────────────────────────────┐
@@ -59,6 +76,32 @@ npm install -g @nexus/studio
 studio init
 ```
 
+**What you see during `studio init`:**
+
+```
+  ⚡ Nexus Studio — The AI Dev OS for Every Team
+
+  ✔ Detected: Next.js 15 · TypeScript · Tailwind CSS · Prisma
+  ✔ Suggested profile: nextjs-fullstack
+
+  ? Select your IDE integrations: (Space to toggle)
+    ◉ GitHub Copilot
+    ◉ Cursor
+    ○ Windsurf
+    ○ Claude Code
+
+  Installing 29 agents · 51 skills · 15 workflows...
+  ████████████████████████████ 100%
+
+  ✔ .agent/         installed (147 files)
+  ✔ .github/copilot-instructions.md generated
+  ✔ .cursor/rules/nexus-system.mdc generated
+  ✔ .git/info/exclude updated (.agent/ is local-only — never committed)
+  ✔ .agstudio.json created
+
+  ✨ Ready! Your AI agents are active. Try /blueprint in your IDE.
+```
+
 The `init` wizard will:
 1. **Auto-detect** your framework (Next.js, Python/FastAPI, Java/Spring, etc.)
 2. **Suggest a profile** with the right agent + skill set
@@ -96,7 +139,38 @@ A version-controlled manifest that defines all agents, skills, profiles, and sla
 
 ---
 
-## 📦 Supported Stacks & Profiles
+## � How a Request Flows — 8-Stage Pipeline
+
+When you type a prompt in your IDE, Nexus routes it through a structured pipeline defined in `.agent/AGENT_FLOW.md`:
+
+```
+  1. REQUEST ENTRY    ─  Natural language · slash command · domain request
+          │
+  2. SOCRATIC GATE    ─  New feature? → 3 strategic clarifying questions
+          │              Bug fix?     → confirm scope → proceed
+          │
+  3. AGENT SELECTION  ─  Auto-routes via AGENTS.md routing table
+          │              (no @mention needed — intent detection is automatic)
+          │
+  4. AGENT INIT       ─  Loads persona · behavioral constraints · output format
+          │
+  5. SKILL LOADING    ─  Matches request → injects domain SKILL.md into context
+          │              Cross-links related skills (e.g. owasp-top10 ↔ auth-nextauth)
+          │
+  6. TASK EXECUTION   ─  Agent executes with full combined context
+          │              Scripts require explicit user approval before running
+          │
+  7. VALIDATION       ─  Quick (~30s): security · lint/TS · schema · unit tests
+          │              Full  ( ~5m): + Lighthouse · Playwright E2E · bundle · i18n
+          │
+  8. RESULT DELIVERY  ─  Code diff + explanation + next-step suggestions
+```
+
+> **Multi-agent note:** When a request spans multiple domains (e.g. UI + API + DB), agents execute **sequentially** with context hand-off — not in true parallel. The AI processes one domain at a time.
+
+---
+
+## �📦 Supported Stacks & Profiles
 
 Nexus Studio auto-detects your project and maps it to the most appropriate profile:
 
@@ -155,7 +229,10 @@ Agents are expert personas that the AI activates automatically based on request 
 
 ## 🧠 Expert Skills (51)
 
-Skills are domain-specific coding guidelines injected into the agent's context. Each skill has a token budget to keep context lean.
+<details>
+<summary>51 skills across 13 categories — click to expand</summary>
+
+Skills are domain-specific coding guidelines injected into the agent's context. Each skill has a token budget to keep context lean. Use `studio info skill <id>` to inspect any skill in full detail.
 
 | Category | Skills |
 |---|---|
@@ -170,6 +247,8 @@ Skills are domain-specific coding guidelines injected into the agent's context. 
 | **AI & Engineering** | `openai-sdk` · `anthropic-claude-sdk` · `google-gemini-sdk` · `vercel-ai-sdk` · `langchain-typescript` · `rag-implementation` |
 | **Marketing & SEO** | `seo-core-web-vitals` |
 | **UX/UI Design** | `ux-fundamentals` |
+
+</details>
 
 ---
 
@@ -332,6 +411,104 @@ Validate a `.agstudio.company.json` against the schema.
 studio company validate
 ```
 
+### `studio search <query>`
+Search the registry for agents, skills, workflows, and profiles by keyword.
+
+```bash
+studio search "security"
+studio search "react" --type skill
+studio search "java"  --type agent
+```
+
+### `studio info <type> <id>`
+Show the full definition, token budget, skill cross-references, and activation conditions for any registry item.
+
+```bash
+studio info agent   enterprise-architect
+studio info skill   owasp-top10
+studio info profile nextjs-fullstack
+```
+
+### `studio diff`
+Show what has drifted between your installed files and the upstream registry (read-only — does not modify any files).
+
+```bash
+studio diff                               # Show all drifted files
+studio diff agents/security-engineer.md  # Diff a specific file
+```
+
+### `studio rollback`
+Roll back the most recent `update` or `sync` operation.
+
+```bash
+studio rollback
+studio rollback --dry-run   # Preview what would be restored
+```
+
+### `studio ci`
+CI-optimised single command: runs `validate` + `sync --check` in sequence. Exits non-zero on any failure — designed for pipeline use.
+
+```bash
+studio ci
+studio ci --strict          # Also fail on Tier 3 advisory warnings
+```
+
+### `studio create <type> <id>`
+Scaffold a new agent, skill, or workflow template locally — ready to customise and contribute upstream.
+
+```bash
+studio create skill    my-graphql-patterns
+studio create agent    my-domain-expert
+studio create workflow my-deploy-flow
+```
+
+### `studio contribute <type> <id>`
+Validate a locally-created template against the quality bar, auto-generate its registry entry, and print the git commands to open a PR.
+
+```bash
+studio contribute skill  my-graphql-patterns
+studio contribute agent  my-domain-expert
+```
+
+### `studio context`
+Track AI context — decisions, architectural changes, and technical debt — linked to your project history.
+
+```bash
+studio context init                           # Initialise context tracking
+studio context sync                           # Sync to .agent/CONTEXT.md
+studio context log "Migrated auth to NextAuth v5"
+studio context status                         # Show entries + staleness
+```
+
+### `studio profile`
+Save and restore named sets of agents + skills for reuse across projects or team members.
+
+```bash
+studio profile create  my-team-profile
+studio profile show    my-team-profile
+studio profile edit    my-team-profile
+studio profile path                           # Print profile file location
+```
+
+### `studio mcp`
+Manage MCP (Model Context Protocol) server integrations across all active IDE configs.
+
+```bash
+studio mcp list                               # Show registered MCP servers
+studio mcp add    @modelcontextprotocol/server-filesystem
+studio mcp remove @modelcontextprotocol/server-filesystem
+studio mcp apply                              # Write mcp config to all IDEs
+```
+
+### `studio completion`
+Generate shell completion scripts for instant tab-completion of commands and IDs.
+
+```bash
+studio completion bash  >> ~/.bashrc
+studio completion zsh   >> ~/.zshrc
+studio completion fish  > ~/.config/fish/completions/studio.fish
+```
+
 ---
 
 ## 🏢 Enterprise Configuration
@@ -441,9 +618,11 @@ nexus-studio-monorepo/
 ├── apps/
 │   └── studio/              # @nexus/studio — the CLI package
 │       ├── src/
-│       │   ├── cli.ts       # Commander.js entry point (12 commands)
-│       │   ├── commands/    # init · status · list · doctor · validate
-│       │   │                # run · add · remove · update · sync · company
+│       │   ├── cli.ts       # Commander.js entry point (21 command modules)
+│       │   ├── commands/    # init · status · list · doctor · validate · run
+│       │   │                # add · remove · update · sync · company · search
+│       │   │                # info · diff · rollback · ci · create · contribute
+│       │   │                # context · profile · mcp · completion
 │       │   ├── core/        # template-engine · project-detector · config-manager
 │       │   │                # ide-config-generator · enterprise-config · git-integration
 │       │   ├── ui/          # banner · logger · spinner
@@ -472,6 +651,42 @@ nexus-studio-monorepo/
 | Git | Any recent version (for `.git/info/exclude` setup) |
 
 > **Windows users**: Quality gate scripts (`.sh`) require Git Bash. Nexus Studio auto-detects Git Bash at the standard install paths. WSL is also supported.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome — and the fastest path is via the CLI itself:
+
+```bash
+# 1. Scaffold a new template
+studio create skill  my-graphql-patterns
+
+# 2. Edit the generated file
+#    packages/templates/.agent/skills/my-graphql-patterns/SKILL.md
+
+# 3. Validate + generate registry entry + print PR git commands
+studio contribute skill  my-graphql-patterns
+```
+
+**Quality bar per template type:**
+
+| Type | Minimum requirements |
+|---|---|
+| **Skill** | ≥ 400 chars · one code example · anti-patterns list · checklist · accurate `tokenBudget` |
+| **Agent** | Activation condition · when NOT to activate · output format spec · skill cross-references |
+| **Workflow** | Trigger command · step-by-step · success criteria · rollback instructions |
+
+**Review turnaround:**
+
+| PR type | Reviewer | ETA |
+|---|---|---|
+| New skill | 1 senior dev | ~2 days |
+| New agent | Deepak Biswal | ~1 week |
+| New workflow | 1 senior dev + QA | ~3 days |
+| Bug fix | Automated CI | Same day |
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the complete YAML frontmatter schema, branch naming convention (`feat/contribute-<type>-<id>`), and test requirements.
 
 ---
 
