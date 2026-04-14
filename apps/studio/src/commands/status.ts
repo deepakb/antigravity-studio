@@ -1,10 +1,11 @@
-import { readConfig } from "../core/config-manager.js";
+﻿import { readConfig } from "../core/config-manager.js";
 import { loadCompanyConfig } from "../core/enterprise-config.js";
 import { logger } from "../ui/logger.js";
 import { getContextDir, CONTEXT_FILES } from "../core/context-manager.js";
 import { profileExists, getProfileHash } from "../core/profile-manager.js";
 import chalk from "chalk";
-import logSymbols from "log-symbols";
+import { IC } from "../ui/icons.js";
+import { sectionHeader, progressBar } from "../ui/theme.js";
 import gradient from "gradient-string";
 import boxen from "boxen";
 import fs from "fs-extra";
@@ -45,40 +46,50 @@ export async function statusCommand(cwd: string = process.cwd()): Promise<void> 
     const installed = required.filter(s => installedSkills.has(s));
     const missing   = required.filter(s => !installedSkills.has(s));
     const pct = required.length > 0 ? Math.round((installed.length / required.length) * 100) : 100;
-    const bar = buildBar(pct, 20);
-    const barColor = pct === 100 ? chalk.green : pct >= 50 ? chalk.yellow : chalk.red;
+    const bar = progressBar(pct, 20);
 
     console.log(gold("\n  ◈ Enterprise Standards"));
     console.log(`    ${chalk.bold("Company:")}    ${chalk.cyan(companyConfig.companyName)} v${companyConfig.version}`);
-    console.log(`    ${chalk.bold("Compliance:")} ${barColor(bar)} ${pct}%`);
+    console.log(`    ${chalk.bold("Compliance:")} ${bar} ${pct}%`);
     if (missing.length > 0) {
-      console.log(`    ${chalk.yellow(logSymbols.warning)} Missing required skills: ${missing.map(s => chalk.yellow(s)).join(", ")}`);
+      console.log(`    ${IC.warn} Missing required skills: ${missing.map(s => chalk.yellow(s)).join(", ")}`);
       console.log(`    ${chalk.dim("→ Run")} ${chalk.cyan("studio sync")} ${chalk.dim("to install them")}`);
     } else {
-      console.log(`    ${logSymbols.success} All ${required.length} required skills installed`);
+      console.log(`    ${IC.pass}  All ${required.length} required skills installed`);
     }
   } else {
     console.log(gold("\n  ◈ Enterprise Standards"));
-    console.log(`    ${chalk.dim(logSymbols.warning)} No company config — run ${chalk.cyan("studio company init <name>")} to set standards`);
+    console.log(`    ${IC.warn}  No company config — run config — run ${chalk.cyan("studio company init <name>")} to set standards`);
   }
 
-  // 3. Installed Assets
-  console.log(gold(`\n  ◈ Knowledge Assets & Tools`));
-  const categories: Array<{ key: "agents" | "skills" | "workflows" | "scripts"; label: string }> = [
+  // 3. Installed Assets — two-panel grid
+  console.log(gold(`\n  \u25c8 Knowledge Assets & Tools`));
+  console.log("");
+
+  const panels: Array<{ key: "agents" | "skills" | "workflows" | "scripts"; label: string }> = [
     { key: "agents",    label: "AI Agents" },
-    { key: "skills",    label: "Specialized Skills" },
-    { key: "workflows", label: "Automated Workflows" },
-    { key: "scripts",   label: "Utility Scripts" },
+    { key: "skills",    label: "Skills" },
+    { key: "workflows", label: "Workflows" },
+    { key: "scripts",   label: "Scripts" },
   ];
 
-  console.log("");
-  categories.forEach(({ key, label }) => {
-    const list  = config.installed[key] || [];
-    const count = list.length;
-    const color = count > 0 ? chalk.cyan : chalk.dim;
-    const icon  = count > 0 ? logSymbols.success : chalk.dim("○");
-    process.stdout.write(`    ${icon} ${label.padEnd(20)} ${color(count.toString().padStart(2))} installed\n`);
-  });
+  // Print in 2x2 grid: [Agents | Skills] / [Workflows | Scripts]
+  for (let i = 0; i < panels.length; i += 2) {
+    const left  = panels[i]!;
+    const right = panels[i + 1];
+    const lCount = (config.installed[left.key] || []).length;
+    const rCount = right ? (config.installed[right.key] || []).length : 0;
+    const lIcon  = lCount > 0 ? IC.pass : IC.skip;
+    const rIcon  = right ? (rCount > 0 ? IC.pass : IC.skip) : "";
+    const lCol   = lCount > 0 ? chalk.cyan : chalk.dim;
+    const rCol   = rCount > 0 ? chalk.cyan : chalk.dim;
+
+    const leftCell  = `${lIcon}  ${chalk.bold(left.label.padEnd(12))} ${lCol(lCount.toString().padStart(3))} installed`;
+    const rightCell = right
+      ? `${rIcon}  ${chalk.bold(right.label.padEnd(12))} ${rCol(rCount.toString().padStart(3))} installed`
+      : "";
+    console.log(`    ${leftCell}     ${rightCell}`);
+  }
 
   // 4. Customized files (protected from overwrite)
   if (config.customized && config.customized.length > 0) {
@@ -97,8 +108,8 @@ export async function statusCommand(cwd: string = process.cwd()): Promise<void> 
     // File presence check
     for (const file of CONTEXT_FILES) {
       const exists = fs.existsSync(path.join(contextDir, file));
-      const icon   = exists ? logSymbols.success : chalk.dim("○");
-      console.log(`    ${icon} ${chalk.dim(file)}`);
+      const icon   = exists ? IC.pass : IC.skip;
+      console.log(`    ${icon}  ${chalk.dim(file)}`);
     }
 
     // Profile staleness check
@@ -107,14 +118,14 @@ export async function statusCommand(cwd: string = process.cwd()): Promise<void> 
       const storedHash  = (config as any)?.contextProfileHash ?? null;
       if (currentHash && currentHash !== storedHash) {
         console.log("");
-        console.log(`    ${logSymbols.warning} ${chalk.yellow("Developer profile updated — run")} ${chalk.cyan("studio context sync")}`);
+        console.log(`    ${IC.warn}  ${chalk.yellow("Developer profile updated — run")} ${chalk.cyan("studio context sync")}`);
       } else {
         console.log("");
-        console.log(`    ${logSymbols.success} ${chalk.dim("Developer profile in sync")}`);
+        console.log(`    ${IC.pass}  ${chalk.dim("Developer profile in sync")}`);
       }
     } else {
       console.log("");
-      console.log(`    ${chalk.dim(logSymbols.warning)} ${chalk.dim("No developer profile — run")} ${chalk.cyan("studio profile create")}`);
+      console.log(`    ${IC.skip}  ${chalk.dim("No developer profile — run")} ${chalk.cyan("studio profile create")}`);
     }
   }
 
@@ -130,7 +141,4 @@ export async function statusCommand(cwd: string = process.cwd()): Promise<void> 
   );
 }
 
-function buildBar(pct: number, width: number): string {
-  const filled = Math.round((pct / 100) * width);
-  return "█".repeat(filled) + "░".repeat(width - filled);
-}
+

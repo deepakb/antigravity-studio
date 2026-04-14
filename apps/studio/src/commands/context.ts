@@ -12,6 +12,7 @@ import * as p from "@clack/prompts";
 import chalk from "chalk";
 import gradient from "gradient-string";
 import { logger } from "../ui/logger.js";
+import { IC } from "../ui/icons.js";
 import {
   initContext,
   syncContext,
@@ -76,7 +77,7 @@ export async function contextInitCommand(cwd: string, force = false): Promise<vo
     }
   }
 
-  p.outro(chalk.green("✓ Context initialised"));
+  p.outro(`${IC.pass} Context initialised`);
 }
 
 // ─── sync ─────────────────────────────────────────────────────────────────────
@@ -111,7 +112,7 @@ export async function contextSyncCommand(cwd: string): Promise<void> {
     logger.success(".agent/context/SKILLS_INDEX.md regenerated");
   }
 
-  p.outro(chalk.green("✓ Context synced"));
+  p.outro(`${IC.pass} Context synced`);
 }
 
 // ─── log ──────────────────────────────────────────────────────────────────────
@@ -183,9 +184,7 @@ export async function contextLogCommand(
     blocked:  "PROJECT_STATE.md",
   };
 
-  p.outro(
-    chalk.green(`✓ Logged to .agent/context/${fileHint[type as LogEntry["type"]]}`)
-  );
+  p.outro(`${IC.pass} Logged to .agent/context/${fileHint[type as LogEntry["type"]]}`);
 }
 
 // ─── status ───────────────────────────────────────────────────────────────────

@@ -166,6 +166,64 @@ The AI silently applies this routing table before every response:
 
 > ⚠️ **LLM Safety Rule**: Any request mentioning AI, LLM, OpenAI, Gemini, Claude, prompt, or RAG **must always** activate `llm-security-officer` as a silent co-reviewer alongside `ai-engineer`.
 
+| Vue.js, Composition API, `<script setup>`, Pinia | `vue-specialist` | `frontend-specialist`, `ui-component-architect` |
+| Nuxt.js, Nuxt 3, SSR, Nitro, useAsyncData | `nuxt-specialist` | `vue-specialist`, `seo-specialist` |
+| Angular, NgRx, RxJS, standalone components, signals | `angular-specialist` | `enterprise-architect`, `accessibility-auditor` |
+| NestJS, Nest modules, guards, interceptors, Passport | `nestjs-specialist` | `backend-specialist`, `security-engineer` |
+| Svelte, SvelteKit, runes, `+page.server.ts` | `svelte-specialist` | `frontend-specialist`, `qa-engineer` |
+| Drizzle ORM, schema, migrations | `database-engineer` | `nestjs-specialist`, `backend-specialist` |
+| tRPC, type-safe API, procedure, client | `api-architect` | `backend-specialist`, `frontend-specialist` |
+| Clerk, Kinde, auth provider, session management | `security-engineer` | `backend-specialist` |
+| Stripe, payments, webhooks, subscription, billing | `backend-specialist` | `security-engineer` |
+
+---
+
+## 🧠 Stage 2.5: Think + Plan Declaration
+
+> **Mandatory for Compound and Epic scope.** Scale the reasoning block to request complexity.
+
+### Scope Scaling Rules
+
+| Scope | Trigger | Required Block | Gate |
+|-------|---------|---------------|------|
+| **Simple** | 1 file, 1 domain | Inline `🧠 THINK` note (1–3 sentences) | None — proceed |
+| **Compound** | 2–5 files, 1–2 domains | `🧠 THINK` + `📋 PLAN` block | Soft — user may redirect |
+| **Epic** | 6+ files OR arch decision | Full 7-stage block | Hard stop after `✅ TASKS` |
+
+### Simple: Inline Think
+```
+🧠 Narrow change: update [X] in [file]. Risk: [none | type mismatch at Y]. Proceeding.
+```
+
+### Compound: Think + Plan
+```
+🧠 THINK
+  What's really being asked: [restate actual goal, not just the surface request]
+  Hidden complexity: [type propagation, shared state mutations, side effects]
+  Risk areas: [security surface, perf regression, accessibility impact]
+
+📋 PLAN
+  1. @[agent] → [file/task]
+  2. @[agent] → [file/task]
+  3. Quality gates: [applicable gates]
+```
+> **Soft gate**: User may redirect here. Otherwise proceed directly to ⚙️ EXECUTE.
+
+### Epic: Full 7-Stage Block
+```
+🧠 THINK   — [restate goal, surface hidden risks, name unknowns]
+📋 PLAN    — [ordered steps with agents, files, dependencies]
+👁️ REVIEW  — [check against DECISIONS.md, GOTCHAS.md, existing contracts]
+✅ TASKS   — [numbered implementation list with owners]
+```
+> **Hard stop**: Deliver tasks list → wait for user confirmation.
+> On confirmation continue:
+```
+⚙️ EXECUTE — [task-by-task with mid-execution checkpoints]
+🔍 VERIFY  — [gate runs, type check, manual steps]
+🧪 TEST    — [test cases + end-to-end verification]
+```
+
 ---
 
 ## 🤖 Stage 3: Agent Coalition & Announcement
@@ -285,7 +343,48 @@ At natural breakpoints, surface progress:
 - OpenAPI spec generation
 - Health check endpoint mandatory
 
-**`monorepo-root`**:
+**`nestjs-api`**:
+- Module-per-feature: controller + service + repository per domain
+- `class-validator` DTOs, global `ValidationPipe`
+- Passport JWT guards on protected routes
+- `@nestjs/swagger` decorators on every DTO and controller
+- `/health` with `@nestjs/terminus` always present
+
+**`vue-nuxt`**:
+- `<script setup>` with composable macros throughout
+- Pinia for global state; `useState` for SSR-safe local state
+- Data: `useFetch` / `useAsyncData` in pages — never raw fetch in `onMounted`
+- SEO: `useHead` / `useSeoMeta` on every public route
+
+**`vue-vite`**:
+- `<script setup lang="ts">` everywhere
+- TanStack Query (Vue adapter) for server state
+- Pinia for global client state
+- Vite proxy for API calls in dev
+
+**`angular-enterprise`**:
+- Standalone components, `inject()` DI pattern
+- Signals for local state, NgRx Signal Store for global
+- All routes lazy-loaded via `loadComponent` / `loadChildren`
+- Typed HTTP repository services with interceptors
+
+**`svelte-kit`**:
+- `+page.server.ts` for SSR data loading
+- Form actions for all mutations
+- Svelte 5 runes: `$props()`, `$state()`, `$derived()`, `$effect()`
+- Zod validation on every server-side `load` and `action`
+
+**`remix-fullstack`**:
+- `loader` + `action` exports on every route
+- Remix `<Form>` for all form submissions
+- `useFetcher` for non-navigation mutations
+- Zod validation inside every `action`
+
+**`astro-content`**:
+- `.astro` files for pages; islands only for interactive components
+- Content Collections API for all markdown/MDX
+- `client:visible` preferred over `client:load` for islands
+- `<Image>` from `astro:assets` for all local images
 - No feature code here — orchestration and DevOps only
 - Workspace-level tooling: Turbo, ESLint flat config, TypeScript references
 - Document cross-package contracts

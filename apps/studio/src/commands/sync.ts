@@ -24,21 +24,33 @@ import { logger } from "../ui/logger.js";
 import { Spinner } from "../ui/spinner.js";
 import type { AgStudioConfig } from "../types/config.js";
 import { getDriftAgentHint } from "../core/agent-gate-map.js";
+import { IC } from "../ui/icons.js";
+import { elapsed } from "../ui/theme.js";
 
 export interface SyncOptions {
   check?: boolean;   // CI mode — exit 1 on drift, no prompts
   force?: boolean;   // Overwrite everything without asking
   quiet?: boolean;   // Suppress output (for programmatic use)
   all?:   boolean;   // Monorepo mode — run sync across all apps/* and packages/*
+  deep?:  boolean;   // Deep mode — root files, ghost tracking, profile drift, MCP hints
 }
 
 interface DriftEntry {
-  category: "agents" | "skills" | "workflows" | "scripts";
+  category: "agents" | "skills" | "workflows" | "scripts" | "root";
   id: string;
-  status: "up-to-date" | "outdated" | "missing" | "unknown";
+  // "stale" = installed but no stored hash (pre-hash-tracking); treated as outdated
+  status: "up-to-date" | "outdated" | "missing" | "unknown" | "stale";
   installedHash?: string;
   latestHash?: string;
 }
+
+/** Top-level .agent/ instruction files checked by --deep sync. */
+const ROOT_FILES = [
+  "AGENTS.md",
+  "AGENT_FLOW.md",
+  "AGENT_SYSTEM.md",
+  "ARCHITECTURE.md",
+] as const;
 
 export async function syncCommand(
   cwd: string = process.cwd(),
@@ -59,16 +71,28 @@ export async function syncCommand(
 
   if (!opts.quiet) {
     logger.blank();
-    logger.info(chalk.bold("🔄  Nexus Sync — checking for drift..."));
+    logger.info(chalk.bold(`${IC.sync}  Nexus Sync \u2014 checking for drift...`));
     logger.blank();
   }
 
-  // ── 1. Compute drift ────────────────────────────────────────────────────────
+  // ── 1. Auto-track ghost files (--deep only) ─────────────────────────────
+  if (opts.deep) {
+    const ghostSpinner = new Spinner("Scanning for untracked files...").start();
+    const ghostCount   = await autoTrackGhosts(cwd, config);
+    if (ghostCount > 0) {
+      await writeConfig(config, cwd);
+      ghostSpinner.succeed(`Auto-tracked ${ghostCount} ghost file(s) — now included in drift check`);
+    } else {
+      ghostSpinner.stop();
+    }
+  }
+
+  // ── 2. Compute drift ────────────────────────────────────────────
   const spinner = new Spinner("Analysing installed files...").start();
-  const drift = await computeDrift(cwd, config);
+  const drift = await computeDrift(cwd, config, opts.deep);
   spinner.succeed(`Scanned ${drift.length} installed items`);
 
-  const outdated = drift.filter((d) => d.status === "outdated");
+  const outdated = drift.filter((d) => d.status === "outdated" || d.status === "stale");
   const missing  = drift.filter((d) => d.status === "missing");
   const upToDate = drift.filter((d) => d.status === "up-to-date");
 
@@ -83,38 +107,56 @@ export async function syncCommand(
     }
   }
 
-  // ── 3. Report ───────────────────────────────────────────────────────────────
+  // ── 3. Profile drift (--deep only) ──────────────────────────────────
+  const profileDrift = opts.deep
+    ? await computeProfileDrift(config)
+    : { agents: [] as string[], skills: [] as string[] };
+
+  // ── 4. Report ─────────────────────────────────────────────────────────────────────────
   if (!opts.quiet) {
     if (upToDate.length > 0) {
-      logger.dim(`✅  ${upToDate.length} item(s) up to date`);
+      logger.dim(`${IC.pass}  ${upToDate.length} item(s) up to date`);
     }
     if (outdated.length > 0) {
-      logger.info(`⚠️   ${chalk.yellow(outdated.length.toString())} item(s) have updates available:`);
+      logger.info(`${IC.warn}  ${chalk.yellow(outdated.length.toString())} item(s) have updates available:`);
       for (const d of outdated) {
-        const hint = getDriftAgentHint(d.category, d.id);
-        logger.dim(`     ${d.category}/${chalk.yellow(d.id)}${hint}`);
+        const hint    = getDriftAgentHint(d.category as "agents" | "skills" | "workflows" | "scripts", d.id);
+        const marker  = d.status === "stale"  ? chalk.dim(" ✔ no stored hash — reinstall") : "";
+        const rootTag = d.category === "root" ? chalk.dim(" (instruction file)") : "";
+        logger.dim(`     ${d.category}/${chalk.yellow(d.id)}${rootTag}${marker}${hint}`);
       }
     }
     if (missing.length > 0) {
-      logger.info(`❌  ${chalk.red(missing.length.toString())} item(s) are missing from .agent/:`);
+      logger.info(`${IC.fail}  ${chalk.red(missing.length.toString())} item(s) are missing from .agent/:`);
       for (const d of missing) {
-        const hint = getDriftAgentHint(d.category, d.id);
-        logger.dim(`     ${d.category}/${chalk.red(d.id)}${hint}`);
+        const hint    = getDriftAgentHint(d.category as "agents" | "skills" | "workflows" | "scripts", d.id);
+        const rootTag = d.category === "root" ? chalk.dim(" (instruction file)") : "";
+        logger.dim(`     ${d.category}/${chalk.red(d.id)}${rootTag}${hint}`);
       }
     }
     if (missingRequired.length > 0) {
       logger.blank();
-      logger.info(chalk.bold("🏢 Company policy violations:"));
+      logger.info(chalk.bold(`${IC.enterprise}  Company policy violations:`));
       for (const req of missingRequired) {
         logger.warn(`  Required skill not installed: ${chalk.yellow(req)}`);
       }
     }
+    if (opts.deep && (profileDrift.agents.length > 0 || profileDrift.skills.length > 0)) {
+      logger.blank();
+      logger.info(chalk.bold(`  💡  Profile drift (${chalk.cyan(config.profile ?? "unknown")}) — in profile but not installed:`));
+      for (const a of profileDrift.agents) logger.dim(`     agents/${chalk.cyan(a)}`);
+      for (const s of profileDrift.skills) logger.dim(`     skills/${chalk.cyan(s)}`);
+    }
     logger.blank();
   }
 
-  // ── 4. CI mode ──────────────────────────────────────────────────────────────
+  // ── 5. CI mode ────────────────────────────────────────────────────────
   if (opts.check) {
-    const hasDrift = outdated.length > 0 || missing.length > 0 || missingRequired.length > 0;
+    const hasDrift =
+      outdated.length > 0 ||
+      missing.length > 0 ||
+      missingRequired.length > 0 ||
+      (opts.deep && (profileDrift.agents.length > 0 || profileDrift.skills.length > 0));
     if (hasDrift) {
       logger.error("Drift detected. Run `studio sync` to update.");
       process.exit(1);
@@ -123,15 +165,27 @@ export async function syncCommand(
     return;
   }
 
-  // ── 5. Nothing to do ────────────────────────────────────────────────────────
-  if (outdated.length === 0 && missing.length === 0 && missingRequired.length === 0) {
+  // ── 6. MCP hint (--deep only) ─────────────────────────────────────────
+  if (opts.deep) await printMcpHint(cwd);
+
+  // ── 7. Nothing to do ───────────────────────────────────────────────
+  const hasAnything =
+    outdated.length > 0 ||
+    missing.length > 0 ||
+    missingRequired.length > 0 ||
+    (opts.deep && (profileDrift.agents.length > 0 || profileDrift.skills.length > 0));
+  if (!hasAnything) {
     logger.success("Everything is up to date! 🎉");
     return;
   }
 
-  // ── 6. Force mode ───────────────────────────────────────────────────────────
+  // ── 8. Force mode ─────────────────────────────────────────────────
   if (opts.force) {
-    await pullUpdates(cwd, config, [...outdated, ...missing], missingRequired, true);
+    const profileItems: DriftEntry[] = opts.deep ? [
+      ...profileDrift.agents.map((a) => ({ category: "agents" as const, id: a, status: "missing" as const })),
+      ...profileDrift.skills.map((s) => ({ category: "skills" as const, id: s, status: "missing" as const })),
+    ] : [];
+    await pullUpdates(cwd, config, [...outdated, ...missing, ...profileItems], missingRequired, true);
     return;
   }
 
@@ -181,7 +235,7 @@ export async function syncCommand(
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-async function computeDrift(cwd: string, config: AgStudioConfig): Promise<DriftEntry[]> {
+async function computeDrift(cwd: string, config: AgStudioConfig, deep = false): Promise<DriftEntry[]> {
   const entries: DriftEntry[] = [];
   const storedHashes = config.installedHashes ?? {};
   const categories: Array<"agents" | "skills" | "workflows" | "scripts"> = [
@@ -199,6 +253,7 @@ async function computeDrift(cwd: string, config: AgStudioConfig): Promise<DriftE
         continue;
       }
       if (!templatePath || !(await fs.pathExists(templatePath))) {
+        // Template no longer exists — cannot update
         entries.push({ category, id, status: "unknown" });
         continue;
       }
@@ -212,7 +267,36 @@ async function computeDrift(cwd: string, config: AgStudioConfig): Promise<DriftE
       entries.push({
         category,
         id,
-        status: storedRawHash === undefined ? "unknown"
+        // "stale" = installed but no stored hash (pre-hash-tracking or manually
+        // added). Treated as outdated so it surfaces in the update prompt.
+        status: storedRawHash === undefined ? "stale"
+              : currentRawHash === storedRawHash ? "up-to-date"
+              : "outdated",
+        ...(storedRawHash !== undefined && { installedHash: storedRawHash }),
+        latestHash: currentRawHash,
+      });
+    }
+  }
+
+  // ── Root files pass (--deep only) ───────────────────────────────────────────
+  if (deep) {
+    for (const filename of ROOT_FILES) {
+      const installedPath = path.join(cwd, ".agent", filename);
+      const templatePath  = path.join(TEMPLATES_DIR, ".agent", filename);
+      if (!fs.existsSync(templatePath)) continue;
+
+      if (!fs.existsSync(installedPath)) {
+        entries.push({ category: "root", id: filename, status: "missing" });
+        continue;
+      }
+
+      const currentRawHash = await hashFile(templatePath);
+      const storedRawHash  = storedHashes[filename] ?? storedHashes[`root/${filename}`];
+
+      entries.push({
+        category: "root",
+        id: filename,
+        status: storedRawHash === undefined ? "stale"
               : currentRawHash === storedRawHash ? "up-to-date"
               : "outdated",
         ...(storedRawHash !== undefined && { installedHash: storedRawHash }),
@@ -320,6 +404,100 @@ async function hashFile(filePath: string): Promise<string> {
   }
 }
 
+// ── Deep-sync helpers ────────────────────────────────────────────────────────────
+
+/**
+ * Scans .agent/{agents,skills,workflows,scripts}/ on disk and adds any files
+ * that exist but are absent from config.installed.* to the tracking manifest.
+ * The current template hash is stored so subsequent drift checks are accurate.
+ */
+async function autoTrackGhosts(cwd: string, config: AgStudioConfig): Promise<number> {
+  let tracked = 0;
+  const scan: Array<{
+    key: "agents" | "skills" | "workflows" | "scripts";
+    ext: string;
+    isDir: boolean;
+  }> = [
+    { key: "agents",    ext: ".md", isDir: false },
+    { key: "skills",    ext: "",    isDir: true  },
+    { key: "workflows", ext: ".md", isDir: false },
+    { key: "scripts",   ext: "",    isDir: true  },
+  ];
+
+  if (!config.installed)       config.installed       = { agents: [], skills: [], workflows: [], scripts: [] };
+  if (!config.installedHashes) config.installedHashes = {};
+
+  for (const { key, ext, isDir } of scan) {
+    const dir = path.join(cwd, ".agent", key);
+    if (!fs.existsSync(dir)) continue;
+
+    for (const entry of fs.readdirSync(dir)) {
+      const entryPath = path.join(dir, entry);
+      const stat      = fs.statSync(entryPath);
+      if ( isDir && !stat.isDirectory()) continue;
+      if (!isDir &&  stat.isDirectory()) continue;
+
+      const id = isDir ? entry : path.basename(entry, ext);
+      if ((config.installed[key] ?? []).includes(id)) continue;
+
+      // Auto-track: add to the installed list
+      if (!config.installed[key]) config.installed[key] = [];
+      config.installed[key]!.push(id);
+
+      // Store the current template hash so future drift checks are accurate
+      const templatePath = findTemplateFile(key, id);
+      if (templatePath && fs.existsSync(templatePath)) {
+        const hash    = await hashFile(templatePath);
+        const hashKey = isDir
+          ? `${key}/${id}/${(CANONICAL_FILE[key] ?? ["SKILL.md"])[0]}`
+          : `${key}/${id}${ext}`;
+        config.installedHashes![hashKey] = hash;
+      }
+      tracked++;
+    }
+  }
+  return tracked;
+}
+
+/**
+ * Compares the active profile's recommended agents/skills against what is
+ * installed and returns the sets that are in the profile but not yet installed.
+ */
+async function computeProfileDrift(
+  config: AgStudioConfig,
+): Promise<{ agents: string[]; skills: string[] }> {
+  if (!config.profile) return { agents: [], skills: [] };
+  const registry = loadRegistry();
+  const profile  = (registry as any).profiles?.[config.profile];
+  if (!profile)   return { agents: [], skills: [] };
+  const installedAgents = new Set(config.installed.agents ?? []);
+  const installedSkills = new Set(config.installed.skills ?? []);
+  return {
+    agents: ((profile.agents ?? []) as string[]).filter((a) => !installedAgents.has(a)),
+    skills: ((profile.skills ?? []) as string[]).filter((s) => !installedSkills.has(s)),
+  };
+}
+
+/**
+ * Checks if the MCP servers.json template differs from the installed copy and
+ * suggests `studio mcp apply`. MCP is excluded from automated sync because it
+ * contains per-IDE path/key configuration that users must review manually.
+ */
+async function printMcpHint(cwd: string): Promise<void> {
+  const tplServers   = path.join(TEMPLATES_DIR, ".agent", "mcp", "servers.json");
+  const localMcpDir  = path.join(cwd, ".agent", "mcp");
+  const localServers = path.join(localMcpDir, "servers.json");
+  if (!fs.existsSync(tplServers)) return;
+  if (!fs.existsSync(localMcpDir) || !fs.existsSync(localServers)) {
+    logger.dim(`  💡 MCP configs not installed — run ${chalk.cyan("studio mcp apply")} to configure IDE integrations`);
+    return;
+  }
+  const [tplHash, localHash] = await Promise.all([hashFile(tplServers), hashFile(localServers)]);
+  if (tplHash !== localHash) {
+    logger.dim(`  💡 MCP servers.json has updates — run ${chalk.cyan("studio mcp apply")} to refresh IDE configurations`);
+  }
+}
+
 async function pullUpdates(
   cwd: string,
   config: AgStudioConfig,
@@ -346,22 +524,57 @@ async function pullUpdates(
     isMonorepo: projectInfo.isMonorepo ?? false,
   };
 
-  // Build include options from selected drift items + required skills
+  // ── Separate root instruction files from regular template items ──────────────
+  const rootItems    = items.filter((d) => d.category === "root");
+  const regularItems = items.filter((d) => d.category !== "root");
+
+  // Build include options from selected regular drift items + required skills
   const include: { agents?: string[]; skills?: string[]; workflows?: string[]; scripts?: string[] } = {};
-  for (const item of items) {
-    if (!include[item.category]) include[item.category] = [];
-    include[item.category]!.push(item.id);
+  for (const item of regularItems) {
+    const cat = item.category as "agents" | "skills" | "workflows" | "scripts";
+    if (!include[cat]) include[cat] = [];
+    include[cat]!.push(item.id);
   }
   if (requiredSkills.length > 0) {
     include.skills = [...(include.skills ?? []), ...requiredSkills];
   }
 
   const spinner = new Spinner("Pulling updates...").start();
-  const result = await copyTemplates(cwd, { include, force: true }, templateContext);
-  spinner.succeed(`Updated ${result.copied.length} file(s)`);
+  let copiedCount = 0;
+  let result = { copied: [] as string[], hashes: {} as Record<string, string> };
+
+  // Copy regular template items via template engine (Handlebars-aware)
+  if (regularItems.length > 0 || requiredSkills.length > 0) {
+    const r = await copyTemplates(cwd, { include, force: true }, templateContext);
+    result = { copied: r.copied, hashes: r.hashes };
+    copiedCount += result.copied.length;
+  }
+
+  // Overwrite root instruction files directly (policy: always overwrite on confirm)
+  if (rootItems.length > 0) {
+    if (!config.installedHashes) config.installedHashes = {};
+    for (const item of rootItems) {
+      const templatePath  = path.join(TEMPLATES_DIR, ".agent", item.id);
+      const installedPath = path.join(cwd, ".agent", item.id);
+      await fs.copy(templatePath, installedPath, { overwrite: true });
+      config.installedHashes[item.id] = await hashFile(templatePath);
+      copiedCount++;
+    }
+  }
+
+  spinner.succeed(`Updated ${copiedCount} file(s)`);
+
+  // Ensure profile-recommended or manually-added items are tracked in config.installed
+  for (const item of regularItems) {
+    if (item.status === "missing") {
+      const cat = item.category as "agents" | "skills" | "workflows" | "scripts";
+      if (!config.installed[cat]) config.installed[cat] = [];
+      if (!config.installed[cat]!.includes(item.id)) config.installed[cat]!.push(item.id);
+    }
+  }
 
   // Merge new raw template hashes into config so drift detection stays accurate
-  const needsWrite = Object.keys(result.hashes).length > 0 || requiredSkills.length > 0;
+  const needsWrite = Object.keys(result.hashes).length > 0 || requiredSkills.length > 0 || rootItems.length > 0;
   config.installedHashes = { ...(config.installedHashes ?? {}), ...result.hashes };
 
   // Update .agstudio.json with newly added required skills

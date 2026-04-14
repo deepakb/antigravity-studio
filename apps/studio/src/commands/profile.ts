@@ -13,6 +13,7 @@ import chalk from "chalk";
 import gradient from "gradient-string";
 import { execSync } from "child_process";
 import { logger } from "../ui/logger.js";
+import { IC } from "../ui/icons.js";
 import {
   profileExists,
   getProfilePath,
@@ -210,9 +211,7 @@ export async function profileCreateCommand(): Promise<void> {
   const rendered = renderProfile(profile);
   writeProfile(rendered);
 
-  p.outro(
-    chalk.green(`✓ Profile saved to ${chalk.bold(getProfilePath())}`)
-  );
+  p.outro(`${IC.pass} Profile saved to ${chalk.bold(getProfilePath())}`);
 
   logger.blank();
   logger.info(`Next step: run ${chalk.cyan("studio context init")} in your project to inject this profile.`);

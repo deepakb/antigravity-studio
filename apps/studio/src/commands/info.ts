@@ -9,6 +9,7 @@
 import { loadRegistry, TEMPLATES_DIR } from "../core/template-engine.js";
 import { readConfig } from "../core/config-manager.js";
 import { logger } from "../ui/logger.js";
+import { IC } from "../ui/icons.js";
 import fs from "fs-extra";
 import path from "path";
 import chalk from "chalk";
@@ -83,7 +84,7 @@ export async function infoCommand(type: string, id: string, cwd: string): Promis
       lines.push(`  ${chalk.dim("Tokens:")}    ${chalk.yellow(`~${entry.tokenBudget}t budget`)}`);
     }
   }
-  lines.push(`  ${chalk.dim("Status:")}    ${isInstalled ? chalk.green("✓ Installed") : chalk.dim("Not installed")}`);
+  lines.push(`  ${chalk.dim("Status:")}    ${isInstalled ? `${IC.pass} ${chalk.green("Installed")}` : chalk.dim("Not installed")}`);
   lines.push(`  ${chalk.dim("Type:")}      ${chalk.cyan(type)}`);
   lines.push(`  ${chalk.dim("ID:")}        ${id}`);
 

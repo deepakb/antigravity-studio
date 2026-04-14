@@ -1,0 +1,99 @@
+{
+  "project": "@nexus/web",
+  "profile": "react-vite",
+  "updatedAt": "2026-04-10T14:59:26.605Z",
+  "skills": [
+    {
+      "id": "vitest-unit-tests",
+      "path": "./skills/vitest-unit-tests"
+    },
+    {
+      "id": "typography-system",
+      "path": "./skills/typography-system"
+    },
+    {
+      "id": "storybook-driven-development",
+      "path": "./skills/storybook-driven-development"
+    },
+    {
+      "id": "tailwind-design-system",
+      "path": "./skills/tailwind-design-system"
+    },
+    {
+      "id": "solid-principles",
+      "path": "./skills/solid-principles"
+    },
+    {
+      "id": "shadcn-radix-ui",
+      "path": "./skills/shadcn-radix-ui"
+    },
+    {
+      "id": "state-management",
+      "path": "./skills/state-management"
+    },
+    {
+      "id": "seo-core-web-vitals",
+      "path": "./skills/seo-core-web-vitals"
+    },
+    {
+      "id": "responsive-patterns",
+      "path": "./skills/responsive-patterns"
+    },
+    {
+      "id": "react-performance",
+      "path": "./skills/react-performance"
+    },
+    {
+      "id": "react-testing-library",
+      "path": "./skills/react-testing-library"
+    },
+    {
+      "id": "react-patterns",
+      "path": "./skills/react-patterns"
+    },
+    {
+      "id": "playwright-e2e",
+      "path": "./skills/playwright-e2e"
+    },
+    {
+      "id": "micro-interactions",
+      "path": "./skills/micro-interactions"
+    },
+    {
+      "id": "lottie-animations",
+      "path": "./skills/lottie-animations"
+    },
+    {
+      "id": "gsap-animations",
+      "path": "./skills/gsap-animations"
+    },
+    {
+      "id": "framer-motion",
+      "path": "./skills/framer-motion"
+    },
+    {
+      "id": "design-token-architecture",
+      "path": "./skills/design-token-architecture"
+    },
+    {
+      "id": "dark-mode-theming",
+      "path": "./skills/dark-mode-theming"
+    },
+    {
+      "id": "color-system",
+      "path": "./skills/color-system"
+    },
+    {
+      "id": "clean-architecture",
+      "path": "./skills/clean-architecture"
+    },
+    {
+      "id": "api-design-restful",
+      "path": "./skills/api-design-restful"
+    },
+    {
+      "id": "accessibility-wcag",
+      "path": "./skills/accessibility-wcag"
+    }
+  ]
+}

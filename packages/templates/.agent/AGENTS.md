@@ -1,4 +1,4 @@
-# Enterprise Agent Routing Index
+# Nexus Agent Routing Index
 
 > **{{name}}** — Agent activation rules, routing logic, and coalition patterns.
 > The AI reads this file **silently** before responding to every request.
@@ -12,8 +12,10 @@ The AI classifies every request against this table and activates the right agent
 | Signal (keywords / context) | Primary Agent | Coalition |
 |-----------------------------|---------------|-----------|
 | `component`, `hook`, `state`, `form`, `useState`, `useEffect` | `@frontend-specialist` | `@ui-component-architect` |
-| `Next.js`, `App Router`, `RSC`, `Server Action`, `route.ts`, `layout.tsx`, `page.tsx` | `@nextjs-expert` | `@react-performance-guru` |
+| `vite.config`, `rollupOptions`, `manualChunks`, `import.meta.env`, `HMR`, `vite-plugin-`, `build.lib`, `dist/assets`, `chunkSizeWarning`, `rollup-plugin-` | `@vite-specialist` | `@react-performance-guru` |
+| `Next.js`, `App Router`, `RSC`, `Server Action`, `Server Component`, `use server` | `@nextjs-expert` | `@react-performance-guru` |
 | `design`, `animation`, `Tailwind`, `CSS`, `pixel-perfect`, `gradient`, `responsive` | `@ui-design-engineer` | `@ux-designer` |
+| `redesign`, `upgrade UI`, `make it better`, `improve UI`, `ambient background`, `hero section`, `glassmorphism`, `dot grid`, `glow effect` | `@creative-director` + `@ui-design-engineer` | — use `/redesign` workflow |
 | `GSAP`, `ScrollTrigger`, `Framer Motion`, `AnimatePresence`, `Lottie`, `motion`, `parallax`, `scroll-driven` | `@motion-designer` | `@ui-design-engineer`, `@react-performance-guru` |
 | `design token`, `style-dictionary`, `CVA`, `Storybook`, `Chromatic`, `color system`, `typography system`, `token architecture` | `@design-system-architect` | `@ui-design-engineer`, `@ux-designer` |
 | `pixel perfect`, `visual hierarchy`, `brand`, `design review`, `visual quality`, `look and feel`, `spacing rhythm`, `responsive audit` | `@creative-director` | `@design-system-architect`, `@ux-designer` |
@@ -30,13 +32,22 @@ The AI classifies every request against this table and activates the right agent
 | `test`, `Vitest`, `Jest`, `Playwright`, `coverage`, `spec`, `unit`, `integration` | `@qa-engineer` | (domain specialist) |
 | `deploy`, `CI/CD`, `Docker`, `Vercel`, `GitHub Actions`, `pipeline`, `staging` | `@devops-engineer` | `@security-engineer` |
 | `bug`, `error`, `broken`, `crash`, `why does`, `debug`, `trace`, `stack` | `@debugger` | (domain specialist) |
-| `SEO`, `Lighthouse`, `metadata`, `JSON-LD`, `GEO`, `Core Web Vitals`, `ranking` | `@seo-specialist` | `@nextjs-expert` |
+| `SEO`, `Lighthouse`, `metadata`, `JSON-LD`, `GEO`, `Core Web Vitals`, `ranking` | `@seo-specialist` | `@frontend-specialist` |
 | `LLM`, `AI`, `OpenAI`, `Gemini`, `Claude`, `RAG`, `embeddings`, `vector`, `prompt` | `@ai-engineer` + `@llm-security-officer` | `@prompt-engineer` |
 | `system prompt`, `context window`, `few-shot`, `chain-of-thought`, `evals` | `@prompt-engineer` | `@ai-engineer` |
 | `architecture`, `DDD`, `monorepo`, `bounded context`, `clean architecture` | `@enterprise-architect` | `@tech-lead` |
 | `multi-agent`, `orchestrate`, `full-stack feature`, `complex`, `3+ domains` | `@orchestrator` | All applicable specialists |
 | `product`, `user story`, `requirements`, `acceptance criteria`, `MVP`, `roadmap` | `@product-manager` | `@project-planner` |
 | `cloud`, `AWS`, `GCP`, `Azure`, `CDN`, `serverless`, `Lambda`, `S3` | `@cloud-architect` | `@devops-engineer` |
+| `Vue.js`, `<script setup>`, `Pinia`, `Composition API`, `defineProps`, `defineEmits` | `@vue-specialist` | `@frontend-specialist`, `@ui-component-architect` |
+| `Nuxt`, `useAsyncData`, `useFetch`, `Nitro`, `server/api/`, `nuxt.config`, `useHead` | `@nuxt-specialist` | `@vue-specialist`, `@seo-specialist` |
+| `Angular`, `NgRx`, `standalone component`, `inject()`, `Signal`, `@Component`, `ng-` | `@angular-specialist` | `@enterprise-architect`, `@accessibility-auditor` |
+| `NestJS`, `@Module`, `@Injectable`, `@Controller`, `Guard`, `Interceptor`, `Pipe`, `Nest` | `@nestjs-specialist` | `@backend-specialist`, `@security-engineer` |
+| `Svelte`, `SvelteKit`, `+page`, `+layout`, `$props`, `$state`, `$derived`, `rune`, `svelte` | `@svelte-specialist` | `@frontend-specialist`, `@qa-engineer` |
+| `Remix`, `loader`, `action`, `useFetcher`, `<Form>`, `remix.config` | `@remix-specialist` | `@react-performance-guru`, `@database-engineer` |
+| `Astro`, `Content Collections`, `astro:assets`, `island`, `client:visible`, `.astro` | `@astro-specialist` | `@seo-specialist`, `@frontend-specialist` |
+| `Clerk`, `clerkMiddleware`, `auth()`, `currentUser`, `ClerkProvider`, `useAuth` | `@security-engineer` | `@backend-specialist` |
+| `Stripe`, `stripe.checkout`, `webhook`, `payment_intent`, `subscription`, `billing` | `@backend-specialist` | `@security-engineer` |
 
 > **⚠️ LLM Safety Rule**: Requests involving AI, LLM, OpenAI, Gemini, or prompt engineering **always and automatically** activate `@llm-security-officer` as a silent co-reviewer — regardless of what else is requested.
 
@@ -84,11 +95,18 @@ Common **pre-built coalitions** for frequent complex scenarios:
 ### 🎨 Design System / Component Library
 ```
 @design-system-architect (token pipeline, CVA variants, Storybook, Chromatic)
-+ @ui-design-engineer (visual implementation, Tailwind v4, CSS vars)
++ @ui-design-engineer (visual implementation, Tailwind v4, CSS vars, 2026 patterns)
 + @motion-designer (animation variants, Framer Motion, GSAP)
-+ @creative-director (pixel-perfect review, visual hierarchy, brand)
++ @creative-director (pixel-perfect review + prescriptive redesign)
 + @accessibility-auditor (WCAG AA, focus rings, color contrast)
 + @qa-engineer (Storybook play() tests, Chromatic visual regression)
+```
+
+### 🔄 UI Redesign / Visual Upgrade
+```
+[Trigger /redesign workflow]
+@creative-director (three-layer audit + prescription)
++ @ui-design-engineer (implementation using ui-visual-patterns-2026)
 ```
 
 ### 🎬 React+Vite Motion / Animation Feature
@@ -117,10 +135,11 @@ Common **pre-built coalitions** for frequent complex scenarios:
 
 ### ⚡ Performance Investigation
 ```
-@nextjs-expert (RSC analysis, caching strategy)
-+ @react-performance-guru (component profiling, re-renders)
+@react-performance-guru (bundle analysis, component profiling, re-renders)
++ @vite-specialist (react-vite profiles: chunk strategy, manualChunks, plugin analysis)
 + @seo-specialist (Core Web Vitals, LCP/CLS)
 + @devops-engineer (edge caching, CDN config)
+[+ @nextjs-expert — Next.js profiles only: RSC caching, App Router analysis]
 ```
 
 ### 🏗️ New Full-Stack Feature (Epic)
@@ -135,6 +154,42 @@ Common **pre-built coalitions** for frequent complex scenarios:
 → @qa-engineer (tests)
 ```
 
+### 🌊 Vue / Nuxt Full-Stack Feature
+```
+@nuxt-specialist (Nuxt routing, SSR, server routes)
++ @vue-specialist (components, Pinia, composables)
++ @database-engineer (Prisma/Drizzle schema)
++ @security-engineer (CSRF, server route validation)
++ @qa-engineer (Vitest, Playwright)
+```
+
+### 📐 Angular Enterprise Feature
+```
+@angular-specialist (standalone component, signals, lazy routes)
++ @enterprise-architect (NgRx store design if needed)
++ @accessibility-auditor (WCAG on Angular Material)
++ @qa-engineer (unit tests, Cypress/Playwright)
+```
+
+### 🏗️ NestJS API Feature
+```
+@nestjs-specialist (module, controller, service, DTO)
++ @database-engineer (Prisma/Drizzle repository)
++ @security-engineer (guards, Zod/class-validator, OWASP)
++ @api-architect (OpenAPI, versioning strategy)
++ @qa-engineer (Jest unit + Supertest integration)
+```
+
+### 🔑 Auth Setup (Clerk / NextAuth / Passport)
+```
+[Trigger /auth-setup workflow]
+@security-engineer (strategy design, session model)
++ @backend-specialist (middleware, JWT, OAuth)
++ @database-engineer (User, Session schema)
++ (domain specialist for framework integration)
++ @qa-engineer (auth flow E2E tests)
+```
+
 ---
 
 ## 🎯 Profile-Specific Routing Adjustments
@@ -146,10 +201,22 @@ Based on the profile `{{profile}}`, these agents take **priority** over generic 
 | `nextjs-fullstack` | `@nextjs-expert` | Generic `@frontend-specialist` |
 | `nextjs-frontend` | `@ui-component-architect` for all component work | — |
 | `expo-mobile` | `@rn-architect` + `@mobile-ux-designer` | Any web-focused agent |
-| `react-vite` | `@frontend-specialist` + `@react-performance-guru` for logic; `@design-system-architect` + `@motion-designer` + `@creative-director` for UI/design | `@nextjs-expert` |
+| `react-vite` | `@frontend-specialist` + `@react-performance-guru` for logic; `@vite-specialist` for all `vite.config.ts` / build questions; `@design-system-architect` + `@motion-designer` + `@creative-director` for UI/design | `@nextjs-expert` — ⛔ see hard block below |
 | `node-api` | `@api-architect` + `@backend-specialist` | Frontend agents |
+| `nestjs-api` | `@nestjs-specialist` + `@api-architect` | Frontend agents |
+| `vue-nuxt` | `@vue-specialist` + `@nuxt-specialist` | React/Angular agents |
+| `vue-vite` | `@vue-specialist` + `@vite-specialist` | `@nextjs-expert`, `@react-performance-guru` |
+| `angular-enterprise` | `@angular-specialist` + `@enterprise-architect` | Vue/React-specific agents |
+| `svelte-kit` | `@svelte-specialist` | React/Vue/Angular agents |
+| `remix-fullstack` | `@remix-specialist` + `@react-performance-guru` | `@nextjs-expert` |
+| `astro-content` | `@astro-specialist` + `@seo-specialist` | Backend-heavy agents |
 | `monorepo-root` | `@enterprise-architect` + `@tech-lead` | Feature specialists |
 | `monorepo-package` | Package-specific specialists | Root-level orchestration |
+
+> **⛔ `react-vite` hard block — no exceptions**: `@nextjs-expert` must **never** activate on the `react-vite` profile.
+> - `layout.tsx`, `page.tsx`, `route.ts` are standard **React Router** file-naming conventions — they are NOT Next.js App Router files.
+> - All components are **client-side by default**. `'use client'`, `'use server'`, React Server Components, `cache()`, `unstable_cache`, `revalidatePath`, and `next/*` imports — **none of these exist** in this profile.
+> - `@frontend-specialist` owns all React component work. `@react-performance-guru` owns bundle and render profiling.
 
 ---
 
@@ -165,9 +232,14 @@ Based on the profile `{{profile}}`, these agents take **priority** over generic 
 
 ### ⚛️ Frontend (Web)
 - **`nextjs-expert`** — Next.js 15 App Router, RSC, Server Actions, caching strategies
-- **`react-performance-guru`** — Bundle analysis, re-render optimization, Concurrent Features
+- **`vite-specialist`** — Vite 6 build config, manualChunks, plugin architecture, HMR, env vars, library mode, sub-path deploy (react-vite profile)- **`vue-specialist`** — Vue 3 Composition API, `<script setup>`, Pinia, Vue Router, composables
+- **`nuxt-specialist`** — Nuxt 3, Nitro server, `useAsyncData`/`useFetch`, SEO, server routes
+- **`angular-specialist`** — Angular 17+, standalone components, Signals, NgRx Signal Store, `inject()`, RxJS
+- **`svelte-specialist`** — Svelte 5, SvelteKit, runes (`$props`, `$state`, `$derived`), form actions, load functions
+- **`remix-specialist`** — Remix 2, loader/action pattern, nested routes, `useFetcher`, form mutations
+- **`astro-specialist`** — Astro 4+, Content Collections, island architecture, `client:*` directives, `astro:assets`- **`react-performance-guru`** — Bundle analysis, re-render optimization, Concurrent Features
 - **`frontend-specialist`** — React + TypeScript, hooks, state, composable components
-- **`ui-component-architect`** — Design systems, shadcn/ui, Radix, compound components, Storybook
+- **`ui-component-architect`** — Design systems, Radix UI primitives, CVA variants, compound components, Storybook
 
 ### 🎨 UX/UI Design
 - **`ux-designer`** — User journeys, interaction models, UX laws, information architecture
@@ -178,8 +250,9 @@ Based on the profile `{{profile}}`, these agents take **priority** over generic 
 - **`creative-director`** — Pixel-perfect visual quality, brand consistency, visual hierarchy, spacing rhythm, responsive audit
 
 ### 🔧 Backend & API
+- **`nestjs-specialist`** — NestJS modules, controllers, guards, interceptors, pipes, Swagger docs, `@nestjs/terminus`
 - **`backend-specialist`** — Route Handlers, Node.js services, middleware, error handling
-- **`api-architect`** — OpenAPI design, REST/GraphQL contracts, versioning strategy
+- **`api-architect`** — OpenAPI design, REST/GraphQL/tRPC contracts, versioning strategy
 - **`database-engineer`** — Prisma, Drizzle, schema design, migration strategy, query optimization
 - **`data-layer-specialist`** — Redis, WebSockets, CQRS, queues, event sourcing, caching layers
 
@@ -194,6 +267,7 @@ Based on the profile `{{profile}}`, these agents take **priority** over generic 
 
 ### 🏆 Quality, Ops & AI
 - **`qa-engineer`** — Vitest, React Testing Library, Playwright, test strategy, coverage
+- **`validator`** — Quality gate orchestration, schema validation, contract verification, drift detection
 - **`devops-engineer`** — CI/CD pipelines, Docker, Vercel, GitHub Actions, monitoring
 - **`debugger`** — Systematic root cause analysis, 5-Why, binary search debugging
 - **`seo-specialist`** — Core Web Vitals, metadata, JSON-LD structured data, GEO

@@ -6,7 +6,8 @@ import { getBashExecutable } from "../core/platform.js";
 import { logger } from "../ui/logger.js";
 import { Spinner } from "../ui/spinner.js";
 import chalk from "chalk";
-import logSymbols from "log-symbols";
+import { IC } from "../ui/icons.js";
+import { sectionHeader, elapsed, langLabel } from "../ui/theme.js";
 import gradient from "gradient-string";
 import boxen from "boxen";
 import type { ValidationResult, ValidationIssue } from "../types/validation.js";
@@ -17,6 +18,7 @@ interface ValidateOptions {
   skipE2e: boolean;
   fix: boolean;
   all: boolean;
+  json: boolean;
 }
 
 // ── Language-specific check definitions ──────────────────────────────────────
@@ -231,7 +233,8 @@ export async function validateCommand(
   cwd: string = process.cwd(),
   options: Partial<ValidateOptions> = {}
 ): Promise<void> {
-  const { skipE2e = false, fix = false, all = false } = options;
+  const { skipE2e = false, fix = false, all = false, json = false } = options;
+  const startTime = Date.now();
   const project = detectProject(cwd);
 
   const cyanPink = gradient(["#00DBDE", "#FC00FF"]);
@@ -287,9 +290,10 @@ export async function validateCommand(
 
   // ── Agent coalition summary (Claude-CLI-style — show who is doing what) ────
   const allChecks = [...native, ...scripts].map((c) => ({ label: c.label }));
-  printValidationCoalition(allChecks);
-
-  console.log(gold("  ◈ Executing Validation Matrix\n"));
+  if (!json) {
+    printValidationCoalition(allChecks);
+    console.log(gold("  ◈ Executing Validation Matrix\n"));
+  }
 
   // ── Native checks (Python / Java / .NET / Flutter) ─────────────────────────
   if (native.length > 0) {
@@ -299,25 +303,35 @@ export async function validateCommand(
     await Promise.all(parallelNative.map(async (check) => {
       const result = await runNativeCheck(check, cwd);
       results.push(result);
-      if (result.passed) {
-        logger.success(`${check.label} passed`);
-      } else {
-        logger.error(`${check.label} failed`);
+      if (!json) {
+        if (result.passed) {
+          logger.success(`${check.label} passed`);
+        } else {
+          logger.error(`${check.label} failed`);
+        }
+      }
+      if (!result.passed) {
         result.issues.forEach(i => allIssues.push({ ...i, script: result.name }));
       }
     }));
 
     for (const check of sequentialNative) {
       if (skipE2e) {
-        console.log(`    ${chalk.dim("○")} ${chalk.dim(check.label.padEnd(25))} ${chalk.dim("SKIPPED")}`);
+        if (!json) {
+          console.log(`    ${chalk.dim("○")} ${chalk.dim(check.label.padEnd(25))} ${chalk.dim("SKIPPED")}`);
+        }
         continue;
       }
-      const spinner = new Spinner(`Running: ${check.label}...`).start();
+      const spinner = json ? null : new Spinner(`Running: ${check.label}...`).start();
       const result = await runNativeCheck(check, cwd);
       results.push(result);
-      if (result.passed) spinner.succeed(chalk.green(check.label));
-      else {
-        spinner.fail(chalk.red(check.label));
+      if (spinner) {
+        if (result.passed) spinner.succeed(chalk.green(check.label));
+        else {
+          spinner.fail(chalk.red(check.label));
+        }
+      }
+      if (!result.passed) {
         result.issues.forEach(i => allIssues.push({ ...i, script: result.name }));
       }
     }
@@ -331,37 +345,70 @@ export async function validateCommand(
     await Promise.all(parallelScripts.map(async (check) => {
       const result = await runScript(check.script, cwd, fix ? ["--fix"] : []);
       results.push(result);
-      if (result.passed) logger.success(`${check.label} passed`);
-      else {
-        logger.error(`${check.label} failed`);
+      if (!json) {
+        if (result.passed) logger.success(`${check.label} passed`);
+        else logger.error(`${check.label} failed`);
+      }
+      if (!result.passed) {
         result.issues.forEach(i => allIssues.push({ ...i, script: result.name }));
       }
     }));
 
     for (const check of sequentialScripts) {
       if (skipE2e) {
-        console.log(`    ${chalk.dim("○")} ${chalk.dim(check.label.padEnd(25))} ${chalk.dim("SKIPPED")}`);
+        if (!json) {
+          console.log(`    ${chalk.dim("○")} ${chalk.dim(check.label.padEnd(25))} ${chalk.dim("SKIPPED")}`);
+        }
         continue;
       }
-      const spinner = new Spinner(`Checking: ${check.label}...`).start();
+      const spinner = json ? null : new Spinner(`Checking: ${check.label}...`).start();
       const result = await runScript(check.script, cwd, fix ? ["--fix"] : []);
       results.push(result);
-      if (result.passed) spinner.succeed(chalk.green(check.label));
-      else {
-        spinner.fail(chalk.red(check.label));
+      if (spinner) {
+        if (result.passed) spinner.succeed(chalk.green(check.label));
+        else {
+          spinner.fail(chalk.red(check.label));
+        }
+      }
+      if (!result.passed) {
         result.issues.forEach(i => allIssues.push({ ...i, script: result.name }));
       }
     }
+  }
+
+  // ── JSON output (CI mode) ──────────────────────────────────────────────────
+  if (json) {
+    const totalDuration = Date.now() - startTime;
+    const output = {
+      passed:   results.filter((r) =>  r.passed).length,
+      failed:   results.filter((r) => !r.passed).length,
+      skipped:  allChecks.length - results.length,
+      duration: totalDuration,
+      gates: results.map((r) => ({
+        name:     r.name,
+        passed:   r.passed,
+        duration: r.durationMs,
+        issues:   (r.issues ?? []).map((i) => ({
+          severity: i.severity,
+          message:  i.message,
+          ...(i.file !== undefined ? { file: i.file } : {}),
+          ...(i.line !== undefined ? { line: i.line } : {}),
+        })),
+      })),
+    };
+    process.stdout.write(JSON.stringify(output, null, 2) + "\n");
+    if (output.failed > 0) process.exit(1);
+    return;
   }
 
   // ── Summary ────────────────────────────────────────────────────────────────
   if (allIssues.length > 0) {
     console.log(cyanPink("\n  ◈ Engineering Findings Summary\n"));
     allIssues.forEach((issue) => {
-      const symbol = issue.severity === "error" ? logSymbols.error : logSymbols.warning;
+      const symbol = issue.severity === "error" ? IC.fail : IC.warn;
       const color  = issue.severity === "error" ? chalk.red : chalk.yellow;
       const location = issue.file ? ` [${issue.file}${issue.line ? `:${issue.line}` : ""}]` : "";
-      console.log(`    ${symbol} ${chalk.bold(issue.script.toUpperCase())}`);
+      console.log(`    ${symbol}  ${chalk.bold(issue.script.toUpperCase())}`);
       console.log(`      ${color(issue.message)}${chalk.dim(location)}`);
     });
   }

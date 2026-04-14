@@ -49,28 +49,49 @@ space-4 = 1rem          color.surface.elevated    input.border.focus
 }
 ```
 
-### 2. Color System (Radix Colors + Semantic Layer)
-Use **Radix Colors** for perceptual balance and WCAG-guaranteed contrast:
+### 2. Color System
+Define tokens directly in `@theme {}` for primitive values, and override semantics in `:root` / `[data-theme]`.
+
+> **⚠️ Radix Colors**: Using `var(--violet-9)` etc. requires installing `@radix-ui/colors` and
+> importing its CSS (`import "@radix-ui/colors/violet.css"`). Without this, the variables
+> are undefined. For simpler projects, define primitives directly as hex or oklch in `@theme`.
+
+> **⚠️ Tailwind v4 — No `@layer base` needed for CSS vars**: In v4, brand tokens belong in
+> `@theme {}`. Semantic overrides go directly in `:root {}` or `[data-theme]` — no wrapping
+> `@layer base` is required (unlike v3).
 
 ```css
-/* Semantic mapping — one place, all themes */
-@layer base {
-  :root {
-    --color-brand-primary: var(--violet-9);
-    --color-brand-hover:   var(--violet-10);
-    --color-surface-base:  var(--gray-1);
-    --color-surface-card:  var(--gray-2);
-    --color-text-primary:  var(--gray-12);
-    --color-text-muted:    var(--gray-10);
-    --color-border:        var(--gray-6);
-    --color-feedback-success: var(--green-9);
-    --color-feedback-error:   var(--red-9);
-    --color-feedback-warning: var(--amber-9);
-  }
-  [data-theme="dark"] {
-    --color-brand-primary: var(--violet-dark-9);
-    /* ... */
-  }
+/* ====  Option A: Radix Colors (requires @radix-ui/colors package)  ==== */
+/* Import: import "@radix-ui/colors/violet.css" in your CSS entry file */
+:root {
+  --color-brand-primary: var(--violet-9);
+  --color-brand-hover:   var(--violet-10);
+  --color-surface-base:  var(--gray-1);
+  --color-surface-card:  var(--gray-2);
+  --color-text-primary:  var(--gray-12);
+  --color-text-muted:    var(--gray-10);
+  --color-border:        var(--gray-6);
+  --color-feedback-success: var(--green-9);
+  --color-feedback-error:   var(--red-9);
+  --color-feedback-warning: var(--amber-9);
+}
+[data-theme="dark"] {
+  --color-brand-primary: var(--violet-dark-9);
+  /* ... */
+}
+
+/* ====  Option B: Direct values in @theme (no extra package)  ==== */
+@theme {
+  --color-brand-primary:    oklch(0.62 0.21 290);
+  --color-surface-base:     #ffffff;
+  --color-text-primary:     #0f172a;
+  --color-text-muted:       #64748b;
+  --color-border:           #e2e8f0;
+}
+[data-theme="dark"] {
+  --color-surface-base: #0a0a0f;
+  --color-text-primary: #f1f5f9;
+  --color-border:       #1e1e2e;
 }
 ```
 

@@ -8,6 +8,7 @@
 import { loadRegistry } from "../core/template-engine.js";
 import { readConfig } from "../core/config-manager.js";
 import { logger } from "../ui/logger.js";
+import { IC } from "../ui/icons.js";
 import chalk from "chalk";
 import gradient from "gradient-string";
 import boxen from "boxen";
@@ -128,8 +129,8 @@ export async function searchCommand(
     const label = type === "agent" ? "AI Agents" : type === "skill" ? "Skills" : "Workflows";
     console.log(gold(`\n  ◈ ${label} (${group.length})`));
     for (const hit of group) {
-      const installedBadge = hit.installed ? chalk.green(" ✓ installed") : "";
-      const communityBadge = hit.contributed ? chalk.magenta(" ✦ community") : "";
+      const installedBadge = hit.installed ? ` ${IC.pass} ${chalk.green("installed")}` : "";
+      const communityBadge = hit.contributed ? ` ${IC.community} ${chalk.magenta("community")}` : "";
       const tokenHint = hit.tokenBudget ? chalk.dim(` ~${hit.tokenBudget}t`) : "";
       const categoryHint = hit.category ? chalk.dim(` [${hit.category}]`) : "";
       const idHighlighted = _highlight(hit.id, q);

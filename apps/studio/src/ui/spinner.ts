@@ -2,7 +2,19 @@ import ora, { Ora } from "ora";
 import chalk from "chalk";
 
 /**
- * A consistent wrapper for CLI spinners
+ * Enterprise-grade spinner frames.
+ * Rotating quarter-circle: ◐◓◑◒  (renders cleanly on all terminals)
+ */
+const ENTERPRISE_SPINNER = { frames: ["◐", "◓", "◑", "◒"], interval: 80 };
+
+/**
+ * Filling bar frames — used for longer file-scan operations.
+ * ▱▱▱ → ▰▱▱ → ▰▰▱ → ▰▰▰
+ */
+const BAR_SPINNER = { frames: ["▱▱▱", "▰▱▱", "▰▰▱", "▰▰▰"], interval: 200 };
+
+/**
+ * A consistent wrapper for CLI spinners.
  */
 export class Spinner {
   private spinner: Ora;
@@ -11,8 +23,22 @@ export class Spinner {
     this.spinner = ora({
       text,
       color: "cyan",
-      spinner: "dots",
+      spinner: ENTERPRISE_SPINNER,
     });
+  }
+
+  /**
+   * Factory for file-scan / long-copy operations.
+   * Uses a filling-bar animation instead of the rotating circle.
+   */
+  static bar(text: string): Spinner {
+    const instance = new Spinner(text);
+    instance.spinner = ora({
+      text,
+      color: "cyan",
+      spinner: BAR_SPINNER,
+    });
+    return instance;
   }
 
   /** Start the spinner */

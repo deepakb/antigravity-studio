@@ -28,6 +28,7 @@ import gradient from "gradient-string";
 import boxen from "boxen";
 import { execSync } from "child_process";
 import { logger } from "../ui/logger.js";
+import { IC } from "../ui/icons.js";
 import { isWindows } from "../core/platform.js";
 
 const VALID_TYPES = ["agent", "skill", "workflow"] as const;
@@ -163,7 +164,7 @@ export async function contributeCommand(
 
   // ── Step 6: Print instructions ─────────────────────────────────────────────
   logger.blank();
-  console.log(chalk.bold.white("  📋  Contribution Instructions"));
+  console.log(chalk.bold.white(`  ${IC.section}  Contribution Instructions`));
   logger.divider();
 
   console.log(chalk.bold.cyan("\n  Step 1 — Fork & clone the Nexus Studio repo\n"));
@@ -211,8 +212,8 @@ export async function contributeCommand(
 
   logger.blank();
   p.outro(
-    chalk.green("✓ Contribution guide complete!") +
-      chalk.dim("\n  Thank you for making Nexus Studio better for the whole EPAM team. 🚀")
+    `${IC.pass} Contribution guide complete!` +
+    chalk.dim("\n  Thank you for making Nexus Studio better for the whole EPAM team.")
   );
 }
 

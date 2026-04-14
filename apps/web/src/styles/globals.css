@@ -1,0 +1,309 @@
+@import "tailwindcss";
+
+/* ─── Nexus Studio Brand Tokens ─────────────────────────────────────────────
+   Source of truth: apps/web/BRAND.md
+   DO NOT hardcode these values anywhere in the codebase.
+   All design decisions flow from these tokens.
+─────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* ── Primitive Palette ──────────────────────────────────────────────────── */
+  --color-nexus-blue: #00d4ff;
+  --color-deep-violet: #7c3aed;
+  --color-midnight: #0a0a0f;
+  --color-slate-white: #f8fafc;
+  --color-emerald: #10b981;
+  --color-crimson: #ef4444;
+  --color-amber: #f59e0b;
+  --color-snow: #f1f5f9;
+  --color-steel: #64748b;
+  --color-surface: #111118;
+  --color-surface-raised: #1a1a24;
+  --color-border: #1e1e2e;
+  --color-border-subtle: #2a2a3e;
+  --color-border-strong: #3a3a52;
+
+  /* ── Semantic Tokens — Dark Mode (default) ──────────────────────────────── */
+  --color-background: var(--color-midnight);
+  --color-foreground: var(--color-snow);
+  --color-muted: var(--color-steel);
+  --color-primary: var(--color-nexus-blue);
+  --color-primary-foreground: var(--color-midnight);
+  --color-secondary: var(--color-deep-violet);
+  --color-secondary-foreground: var(--color-snow);
+  --color-success: var(--color-emerald);
+  --color-error: var(--color-crimson);
+  --color-warning: var(--color-amber);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-snow);
+
+  /* ── Typography ─────────────────────────────────────────────────────────── */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+
+  /* ── Spacing / Layout ───────────────────────────────────────────────────── */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* ── Shadows ────────────────────────────────────────────────────────────── */
+  --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.15);
+  --shadow-glow-lg: 0 0 40px rgba(0, 212, 255, 0.2);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+
+  /* ── Z-index scale ──────────────────────────────────────────────────────── */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-overlay: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+}
+
+/* ─── Light mode overrides — "Blueprint Paper" ──────────────────────────── */
+/* #f0f4ff = barely-blue tint so the page feels warm-cool, not clinical white.
+   --color-primary overrides to sky-600 (#0284c7) for WCAG AA contrast on
+   light backgrounds — #00d4ff fails contrast at <3:1 on white.             */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-background:    #f0f4ff;
+    --color-foreground:    #0f172a;
+    --color-card:          #ffffff;
+    --color-card-foreground: #0f172a;
+    --color-border:        #dde3f0;
+    --color-border-subtle: #e8edf8;
+    --color-border-strong: #c7d0e8;
+    --color-muted:         #64748b;
+    --color-surface:       #ffffff;
+    --color-surface-raised: #f8fafc;
+    --color-primary:       #0284c7;
+    --color-secondary:     #7c3aed;
+  }
+}
+
+/* ─── Data attribute theme override (for manual theme toggle) ────────────── */
+[data-theme="light"] {
+  --color-background:    #f0f4ff;
+  --color-foreground:    #0f172a;
+  --color-card:          #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-border:        #dde3f0;
+  --color-border-subtle: #e8edf8;
+  --color-border-strong: #c7d0e8;
+  --color-muted:         #64748b;
+  --color-surface:       #ffffff;
+  --color-surface-raised: #f8fafc;
+  --color-primary:       #0284c7;
+  --color-secondary:     #7c3aed;
+}
+
+[data-theme="dark"] {
+  --color-background: var(--color-midnight);
+  --color-foreground: var(--color-snow);
+  --color-card: var(--color-surface);
+  --color-border: #1e1e2e;
+  --color-border-subtle: #2a2a3e;
+}
+
+/* ─── Base resets ────────────────────────────────────────────────────────── */
+/* IMPORTANT: must be inside @layer base so Tailwind utilities (mx-auto, px-4,
+   etc.) correctly override the reset via the CSS Cascade Layer order.
+   Unlayered rules always win over @layer rules — keeping the reset unlayered
+   would silently break every margin/padding utility across the entire site. */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ─── Nexus gradient — reusable utility ─────────────────────────────────── */
+.nexus-gradient {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+}
+
+.nexus-gradient-text {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Terminal light-mode surface classes ────────────────────────────────── */
+/* In light mode the terminal needs its own cooler surface so it reads as a   */
+/* distinct code pane rather than blending with the white card background.    */
+[data-theme="light"] .terminal-surface,
+@media (prefers-color-scheme: light) { .terminal-surface {
+  background-color: #f1f5f9 !important;
+  border-color: #dde3f0 !important;
+  box-shadow: 0 1px 3px rgba(124,58,237,0.06), 0 4px 24px rgba(2,132,199,0.08) !important;
+}}
+
+[data-theme="light"] .terminal-surface .terminal-prompt-dollar,
+@media (prefers-color-scheme: light) { .terminal-surface .terminal-prompt-dollar {
+  color: #0284c7;
+}}
+
+[data-theme="light"] .terminal-surface .terminal-success,
+@media (prefers-color-scheme: light) { .terminal-surface .terminal-success {
+  color: #059669;
+}}
+
+[data-theme="light"] .terminal-tab-active,
+@media (prefers-color-scheme: light) { .terminal-tab-active {
+  background-color: rgba(2,132,199,0.12);
+  color: #0284c7;
+  border-color: rgba(2,132,199,0.3);
+}}
+
+/* Dark mode defaults for terminal semantic classes */
+.terminal-prompt-dollar { color: var(--color-success); }
+.terminal-success       { color: var(--color-success); }
+.terminal-tab-active {
+  background-color: rgba(0,212,255,0.15);
+  color: var(--color-primary);
+  border: 1px solid rgba(0,212,255,0.25);
+}
+
+/* ─── Focus ring — consistent across all interactive elements ───────────── */
+:focus-visible {
+  outline: 2px solid var(--color-nexus-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Code / pre blocks ──────────────────────────────────────────────────── */
+code,
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+pre {
+  font-family: var(--font-mono);
+  overflow-x: auto;
+}
+
+/* ─── Selection colour ───────────────────────────────────────────────────── */
+::selection {
+  background-color: color-mix(in srgb, var(--color-primary) 25%, transparent);
+  color: var(--color-foreground);
+}
+
+/* ─── Scrollbar (webkit) ─────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-subtle);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-steel);
+}
+
+/* ─── Base form elements ─────────────────────────────────────────────────── */
+@layer base {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-subtle);
+    background-color: var(--color-surface);
+    color: var(--color-foreground);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    width: 100%;
+    transition: border-color 150ms ease;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-muted);
+  }
+
+  input:focus:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+}
+
+/* ─── Docs article prose spacing ────────────────────────────────────────────── */
+article section + section {
+  margin-top: 2.5rem;
+}
+
+/* ─── Entrance animations ────────────────────────────────────────────────── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.18; }
+  50%       { opacity: 0.28; }
+}
+/* Count-up: numbers resolve from a slight blur as they increment */
+@keyframes count-resolve {
+  from { filter: blur(4px); opacity: 0.3; }
+  to   { filter: blur(0);   opacity: 1;   }
+}
+/* Stats bar light-mode gradient sweep */
+@keyframes gradient-sweep {
+  from { background-position: 200% center; }
+  to   { background-position: 0% center;   }
+}
+/* Orchestration flow — connector line draws left-to-right */
+@keyframes pipeline-reveal {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 1; }
+}
+/* Agent coalition pill pop-in with spring overshoot */
+@keyframes agent-pop {
+  from { transform: scale(0.7) translateY(6px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);   opacity: 1; }
+}
+/* Orchestrator hub: expanding ring pulse (looping) */
+@keyframes ring-expand {
+  0%   { transform: scale(1);    opacity: 0.5; }
+  100% { transform: scale(1.65); opacity: 0;   }
+}
+

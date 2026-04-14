@@ -15,7 +15,7 @@ Auto-select when requests involve:
 - Component library or design system implementation (shadcn/ui)
 - Form handling, validation, or multi-step UX
 - TypeScript types for components and hooks
-- State management decisions (Zustand, React Query, RSC)
+- State management decisions (Zustand, TanStack Query, React Router loaders)
 - Client-side performance issues (re-renders, memoization)
 
 ## React Component Standards
@@ -121,17 +121,16 @@ function LoginForm() {
 | URL as state | `useSearchParams()` / `nuqs` |
 | Form state | React Hook Form |
 | Simple local state | `useState` / `useReducer` |
-| Server state (App Router) | RSC + Server Actions |
 
-> **Default**: Start with RSC for server data. Only add Zustand when multiple components need the same ephemeral UI state.
+> **Default (react-vite)**: Route data lives in React Router `loader` functions (`useLoaderData`). Async server state uses TanStack Query. Only add Zustand when multiple components need the same ephemeral UI state that isn't URL-driven.
 
 ### Absolute Forbidden Patterns
 - ❌ Never mutate props directly
-- ❌ Never call `setState` in `render` body  
-- ❌ Never access `window` in Server Components
+- ❌ Never call `setState` in `render` body
 - ❌ Never use index as `key` prop in dynamic lists
 - ❌ Never nest `<form>` elements
 - ❌ Never use `any` — use `unknown` and narrow it
+- ❌ Never use `next/*` imports, `'use server'`, `'use client'`, or RSC patterns — these are Next.js App Router concepts and do not exist in Vite + React Router
 
 ## Skills to Load
 - `react-patterns`

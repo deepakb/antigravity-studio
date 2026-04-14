@@ -1,0 +1,30 @@
+# Build output
+dist/
+dist-ssr/
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Vite
+vite.config.ts.timestamp-*
+
+# Studio — local agent system (intentionally NOT committed; per-developer)
+# studio init populates this folder; keep it machine-local via .git/info/exclude
+# .agent/ is handled by studio's git-integration (setupGitExclude)

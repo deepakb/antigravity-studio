@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-label="Nexus Studio mark">
+  <defs>
+    <linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d4ff"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="ng2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Connector lines from center to satellites -->
+  <line x1="24" y1="24" x2="24" y2="6"  stroke="url(#ng2)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="24" y1="24" x2="24" y2="42" stroke="url(#ng2)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="24" y1="24" x2="8"  y2="14" stroke="url(#ng2)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="24" y1="24" x2="40" y2="34" stroke="url(#ng2)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="24" y1="24" x2="40" y2="14" stroke="url(#ng2)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="24" y1="24" x2="8"  y2="34" stroke="url(#ng2)" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Satellite nodes -->
+  <circle cx="24" cy="6"  r="3" fill="none" stroke="url(#ng)" stroke-width="1.5"/>
+  <circle cx="24" cy="42" r="3" fill="none" stroke="url(#ng)" stroke-width="1.5"/>
+  <circle cx="8"  cy="14" r="3" fill="none" stroke="url(#ng)" stroke-width="1.5"/>
+  <circle cx="40" cy="34" r="3" fill="none" stroke="url(#ng)" stroke-width="1.5"/>
+  <circle cx="40" cy="14" r="3" fill="none" stroke="url(#ng)" stroke-width="1.5"/>
+  <circle cx="8"  cy="34" r="3" fill="none" stroke="url(#ng)" stroke-width="1.5"/>
+
+  <!-- Central node — filled gradient, larger -->
+  <circle cx="24" cy="24" r="8" fill="url(#ng)"/>
+
+  <!-- N letterform cut into center node -->
+  <path
+    d="M20 20.5v7l8-7v7"
+    stroke="white"
+    stroke-width="1.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+</svg>

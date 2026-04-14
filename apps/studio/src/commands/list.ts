@@ -31,10 +31,10 @@ export async function listCommand(cwd: string = process.cwd()): Promise<void> {
   console.log(
     boxen(
       `${chalk.bold("Registry Overview")}\n` +
-      `  • Profiles:  ${chalk.cyan(String(profiles.length))}\n` +
-      `  • AI Agents: ${chalk.cyan(String(agents.length))}\n` +
-      `  • Skills:    ${chalk.cyan(String(skills.length))}\n` +
-      `  • Shortcuts: ${chalk.cyan(String(slashCommands.length))}` +
+      `  • Profiles:          ${chalk.cyan(String(profiles.length))}\n` +
+      `  • Specialist Agents: ${chalk.cyan(String(agents.length))}\n` +
+      `  • Domain Skills:     ${chalk.cyan(String(skills.length))}\n` +
+      `  • Workflow Commands: ${chalk.cyan(String(slashCommands.length))}` +
       (companyConfig ? `\n  • Company:   ${chalk.yellow(companyConfig.companyName)} (${requiredSkills.size} required)` : ""),
       {
         padding: { top: 0, bottom: 0, left: 1, right: 1 },
@@ -72,8 +72,8 @@ export async function listCommand(cwd: string = process.cwd()): Promise<void> {
     });
   });
 
-  // 4. Specialized AI Agents
-  console.log(cyanPink("\n  ◈ Specialized AI Agents"));
+  // 4. Specialist Agents
+  console.log(cyanPink("\n  ◈ Specialist Agents"));
   const agentCategories = [...new Set(agents.map((a: any) => a.category as string))].sort();
   agentCategories.forEach(category => {
     console.log(`\n    ${chalk.bold.white(category.toUpperCase())}`);
@@ -84,19 +84,23 @@ export async function listCommand(cwd: string = process.cwd()): Promise<void> {
       });
   });
 
-  // 5. Slash Commands
+  // 5. Workflow Commands
   if (slashCommands.length > 0) {
-    console.log(gold("\n  ◈ Productivity Slash Commands"));
-    console.log(`    ${chalk.dim(slashCommands.join("  "))}`);
+    console.log(gold("\n  ◈ Workflow Commands"));
+    const cmds = Array.isArray(slashCommands) && typeof slashCommands[0] === "object"
+      ? (slashCommands as any[]).map((c: any) => c.id ?? c)
+      : slashCommands as string[];
+    console.log(`    ${chalk.dim(cmds.join("  "))}`);
   }
 
   logger.blank();
   logger.box(
-    `${chalk.bold.white("Enterprise Usage Tips")}\n\n` +
-    `  ${chalk.dim("• Add skill:")}      ${chalk.cyan("studio add skill <id>")}\n` +
-    `  ${chalk.dim("• Add agent:")}      ${chalk.cyan("studio add agent <id>")}\n` +
-    `  ${chalk.dim("• Check drift:")}    ${chalk.cyan("studio sync --check")}\n` +
-    `  ${chalk.dim("• Company init:")}   ${chalk.cyan("studio company init <name>")}`,
+    `${chalk.bold.white("Quick Commands")}\n\n` +
+    `  ${chalk.dim("• Add skill:")}          ${chalk.cyan("studio add skill <id>")}\n` +
+    `  ${chalk.dim("• Add agent:")}          ${chalk.cyan("studio add agent <id>")}\n` +
+    `  ${chalk.dim("• Developer profile:")}  ${chalk.cyan("studio context init")}\n` +
+    `  ${chalk.dim("• Check drift:")}        ${chalk.cyan("studio sync --check")}\n` +
+    `  ${chalk.dim("• Run quality gates:")}  ${chalk.cyan("studio validate")}`,
     { borderColor: "cyan", padding: 1, margin: { top: 1, bottom: 1 } }
   );
 }

@@ -1,5 +1,6 @@
 import * as p from "@clack/prompts";
 import chalk from "chalk";
+import { IC } from "../ui/icons.js";
 import { loadRegistry, copyTemplates, cleanupStaleScriptRunners } from "../core/template-engine.js";
 import { detectProject } from "../core/project-detector.js";
 import { createConfig, writeConfig } from "../core/config-manager.js";
@@ -75,7 +76,7 @@ export async function initCommand(cwd: string = process.cwd(), opts: InitOptions
         `Required skills: ${chalk.yellow(companyConfig.requiredSkills.length.toString())}`,
         companyConfig.codingStandardsUrl ? `Standards: ${companyConfig.codingStandardsUrl}` : "",
       ].filter(Boolean).join("\n"),
-      chalk.bold("🏢 Enterprise Standards Detected")
+      chalk.bold(`${IC.enterprise} Enterprise Standards Detected`)
     );
   }
 
@@ -142,7 +143,7 @@ export async function initCommand(cwd: string = process.cwd(), opts: InitOptions
     if (policyResult.injected.length > 0) {
       p.note(
         policyResult.injected.map(s => `+ ${chalk.green(s)}`).join("\n"),
-        chalk.bold("🏢 Required by company policy")
+        chalk.bold(`${IC.enterprise} Required by company policy`)
       );
     }
     if (policyResult.removed.length > 0) {
@@ -305,24 +306,24 @@ export async function initCommand(cwd: string = process.cwd(), opts: InitOptions
         const lines: string[] = [];
 
         if (mcpSummary.tier1Ready.length > 0) {
-          lines.push(chalk.green("✅ Ready (zero-config):"));
+          lines.push(`${IC.pass} ${chalk.green("Ready (zero-config):")}`);
           for (const s of mcpSummary.tier1Ready) {
-            lines.push(`   ${chalk.green("•")} ${s.label}`);
+            lines.push(`   ${IC.sub} ${s.label}`);
           }
         }
         if (hasOptional) {
-          lines.push(chalk.yellow("\n⚠️  Optional — add to .env.local to activate:"));
+          lines.push(`\n${IC.warn} ${chalk.yellow("Optional — add to .env.local to activate:")}`);
           for (const s of mcpSummary.tier2Optional) {
-            lines.push(`   ${chalk.yellow("•")} ${s.label}`);
+            lines.push(`   ${IC.sub} ${s.label}`);
             for (let i = 0; i < s.envVars.length; i++) {
               lines.push(`     ${chalk.dim(s.envVars[i]!)}`);
             }
           }
         }
         if (hasDisabled) {
-          lines.push(chalk.red("\n❌ Disabled — credentials required:"));
+          lines.push(`\n${IC.fail} ${chalk.red("Disabled — credentials required:")}`);
           for (const s of mcpSummary.tier3Disabled) {
-            lines.push(`   ${chalk.red("•")} ${s.label}`);
+            lines.push(`   ${IC.sub} ${s.label}`);
             for (let i = 0; i < s.envVars.length; i++) {
               lines.push(`     ${chalk.dim(s.envVars[i]!)}  ${chalk.cyan(s.howToGet[i] ?? "")}`);
             }
@@ -338,9 +339,10 @@ export async function initCommand(cwd: string = process.cwd(), opts: InitOptions
     // ── Done ──────────────────────────────────────────────────────────────────
     const cmdList = SLASH_COMMANDS.map(c => chalk.cyan(`  • ${c}`)).join("\n");
     p.outro(
-      chalk.bold.green("✓ All done! Your enterprise AI toolkit is ready.") +
-      `\n\n${chalk.bold("Slash commands available:")}\n${cmdList}` +
-      `\n\n${chalk.dim("Run")} ${chalk.cyan("studio validate")} ${chalk.dim("to run your first quality gate")}`
+      `${IC.pass} ${chalk.bold.green("All done. Run /status to see what's wired.")}` +
+      `\n\n${chalk.bold("Workflow commands:")}\n${cmdList}` +
+      `\n\n${chalk.dim("Run")} ${chalk.cyan("studio validate")} ${chalk.dim("to run your first quality gate")}` +
+      `\n${chalk.dim("Run")} ${chalk.cyan("studio context init")} ${chalk.dim("to set up your developer profile")}`
     );
   } catch (error) {
     installSpinner.stop();

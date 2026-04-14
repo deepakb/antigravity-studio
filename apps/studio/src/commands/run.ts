@@ -9,13 +9,14 @@ import path from "path";
 import { existsSync, readdirSync, statSync } from "fs";
 import { spawn } from "child_process";
 import chalk, { type ChalkInstance } from "chalk";
-import logSymbols from "log-symbols";
 import boxen from "boxen";
 import gradient from "gradient-string";
 import { detectProject } from "../core/project-detector.js";
 import { getBashExecutable, isWindows } from "../core/platform.js";
 import { loadRegistry, TEMPLATES_DIR } from "../core/template-engine.js";
 import { logger } from "../ui/logger.js";
+import { IC, labelToTierBadge } from "../ui/icons.js";
+import { elapsed } from "../ui/theme.js";
 import { printAgentGateContext } from "../core/agent-gate-map.js";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -208,8 +209,9 @@ export async function runCommand(
   }
 
   // ── Header ────────────────────────────────────────────────────────────────
-  const tierInfo = SCRIPT_TIERS[scriptName];
-  const tierDisplay = tierInfo ? tierInfo.color(tierInfo.label) : "";
+  const tierInfo    = SCRIPT_TIERS[scriptName];
+  const tierDisplay = tierInfo ? labelToTierBadge(tierInfo.label) : chalk.dim("UNKNOWN");
+  const startTime   = Date.now();
 
   console.log(
     boxen(
@@ -229,11 +231,11 @@ export async function runCommand(
   // ── Dry-run shortcut ──────────────────────────────────────────────────────
   if (opts.dryRun) {
     if (usePs1) {
-      console.log(`${logSymbols.info} ${chalk.dim("[dry-run]")} Would execute (PowerShell):`);
+      console.log(`${IC.info}  ${chalk.dim("[dry-run]")} Would execute (PowerShell):`);
       console.log(chalk.cyan(`  pwsh -NonInteractive -File ${scriptRelPath} ${cwd}${opts.fix ? " --fix" : ""}`));
     } else {
       const bashExe = getBashExecutable();
-      console.log(`${logSymbols.info} ${chalk.dim("[dry-run]")} Would execute:`);
+      console.log(`${IC.info}  ${chalk.dim("[dry-run]")} Would execute:`);
       console.log(chalk.cyan(`  ${bashExe} ${scriptRelPath} ${cwd}${opts.fix ? " --fix" : ""}`));
     }
     logger.blank();
@@ -276,16 +278,17 @@ export async function runCommand(
 
   child.on("close", (code) => {
     logger.blank();
+    const ms = Date.now() - startTime;
     if (code === 0) {
       console.log(
-        `${logSymbols.success} ${chalk.green(`"${scriptName}" passed`)} ${chalk.dim(`[${stack}]`)}`
+        `${IC.pass}  ${chalk.green(`"${scriptName}" passed`)} ${chalk.dim(`[${stack}]`)}  ${chalk.dim(elapsed(ms))}`
       );
     } else {
       console.log(
-        `${logSymbols.error} ${chalk.red(`"${scriptName}" failed`)} ${chalk.dim(`exit ${code}  [${stack}]`)}`
+        `${IC.fail}  ${chalk.red(`"${scriptName}" failed`)} ${chalk.dim(`exit ${code}  [${stack}]`)}  ${chalk.dim(elapsed(ms))}`
       );
       if (tierInfo?.label.startsWith("TIER 1")) {
-        console.log(chalk.red.bold("  ⛔  TIER 1 HARD BLOCK — commit should not proceed."));
+        console.log(chalk.red.bold(`  ${IC.shield}  TIER 1 HARD BLOCK \u2014 commit should not proceed.`));
       }
       process.exit(code ?? 1);
     }

@@ -120,6 +120,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  *
  * Why monorepo first: ensures every `studio init` run always uses the latest
  * content from packages/templates without requiring a rebuild after content edits.
+ *
+ * TODO: Publish `packages/templates` as its own npm package `@nexus/templates`
+ *   and add it as a peer/runtime dependency of `@nexus/studio`. Then Priority 2
+ *   (the tsup build-time copy) can be removed entirely — `getTemplatesDir()` would
+ *   resolve templates via `require.resolve('@nexus/templates')` from node_modules,
+ *   which works both in the monorepo and in standalone npm installs without any
+ *   copy step.
+ *   See: apps/studio/tsup.config.ts onSuccess hook (the cpSync call to remove)
  */
 function getTemplatesDir(): string {
   // Priority 1: packages/templates — the single source of truth

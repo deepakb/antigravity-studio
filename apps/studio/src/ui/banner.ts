@@ -10,7 +10,7 @@ export function printBanner(version: string): void {
   console.log(coloredTitle);
   console.log(
     boxen(
-      chalk.bold("Enterprise AI Agent Toolkit for TypeScript") +
+      chalk.bold("The AI Dev OS for Every Team") +
         "\n" +
         chalk.dim(`Version ${version}`),
       {
@@ -26,12 +26,12 @@ export function printBanner(version: string): void {
 
 export function printWelcome(projectName: string, commandsList: string[]): void {
   const message =
-    chalk.bold.green("✓ All done! Your enterprise AI toolkit is ready.") +
+    chalk.bold.green("✓ All done. Run /status to see what's wired.") +
     "\n\n" +
     chalk.dim("Project: ") +
     chalk.cyan(projectName) +
     "\n\n" +
-    chalk.bold.white("Slash Commands Available:") +
+    chalk.bold.white("Workflow Commands:") +
     "\n" +
     commandsList
       .map((c) => chalk.cyan(` • ${c}`))
@@ -39,7 +39,11 @@ export function printWelcome(projectName: string, commandsList: string[]): void 
     "\n\n" +
     chalk.dim("Run ") +
     chalk.cyan("studio validate") +
-    chalk.dim(" to run your first quality gate");
+    chalk.dim(" to run your first quality gate") +
+    "\n" +
+    chalk.dim("Run ") +
+    chalk.cyan("studio context init") +
+    chalk.dim(" to set up your developer profile");
 
   console.log(
     boxen(message, {

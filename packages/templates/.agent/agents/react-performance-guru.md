@@ -61,11 +61,12 @@ const useCart = create<CartStore>((set) => ({ items: [], add: (item) => set((s) 
 
 ### Bundle Optimization
 ```tsx
-// ✅ Dynamic imports for heavy libraries
-const ReactQuill = dynamic(() => import('react-quill'), {
-  ssr: false,
-  loading: () => <Skeleton className="h-40" />,
-});
+// ✅ Dynamic imports for heavy libraries (Vite + React)
+const ReactQuill = lazy(() => import('react-quill'));
+// Wrap at usage site with Suspense
+<Suspense fallback={<Skeleton className="h-40" />}>
+  <ReactQuill />
+</Suspense>
 
 // ✅ Barrel export trap — avoid re-exporting everything
 // ❌ WRONG — importing from index.ts imports ALL
@@ -78,20 +79,29 @@ import { Button } from '@/components/Button';
 
 ### Image Performance
 ```tsx
-// ✅ Complete Next.js image optimization
-import Image from 'next/image';
-
-// For above-the-fold (hero) images — preload
-<Image
-  src="/hero.webp"      // Prefer WebP/AVIF
+// ✅ Vite/React — native HTML img with fetchpriority for LCP images
+// Above-the-fold (hero) — prioritise for LCP
+<img
+  src="/hero.webp"       // Prefer WebP / AVIF
   alt="Descriptive alt" // Never empty for meaningful images
   width={1200}
   height={600}
-  priority              // Preloads the LCP image
-  placeholder="blur"    // Reduces CLS
-  blurDataURL={blurDataUrl}
-  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+  fetchpriority="high"  // Tells browser to preload this as LCP candidate
+  decoding="async"
+  style={{ aspectRatio: '2/1', objectFit: 'cover' }}
 />
+
+// Below-the-fold — lazy load
+<img
+  src="/card.webp"
+  alt="..."
+  loading="lazy"
+  decoding="async"
+  width={400}
+  height={300}
+/>
+
+// For CLS: always set explicit width + height (or aspect-ratio) on every <img>
 ```
 
 ### Core Web Vitals Targets (2025)
@@ -119,5 +129,4 @@ const filteredList = useMemo(() => filter(items, deferredQuery), [items, deferre
 
 ## Skills to Load
 - `react-patterns`
-- `nextjs-app-router`
 - `seo-core-web-vitals`

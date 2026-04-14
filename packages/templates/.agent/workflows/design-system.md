@@ -30,18 +30,29 @@ description: design-system — structured workflow for building, extending, and 
 
 ## Phase 1: Token Foundation Audit
 
+> First, identify which token strategy your project uses:
+
 ```bash
-# 1. Check current token status
-ls src/design-system/tokens/
+# Strategy A: Tailwind v4 @theme in CSS entry file (react-vite, most profiles)
+# → Tokens live in src/styles/globals.css (or equivalent) inside @theme {}
+cat src/styles/globals.css | grep -A 50 "@theme"
 
-# 2. Validate style-dictionary config
-npx style-dictionary build
+# Strategy B: style-dictionary build pipeline
+# → Only if tokens/ directory exists AND style-dictionary.config.mjs is present
+ls tokens/  && npx style-dictionary build
 
-# 3. Check for hardcoded values (should be zero)
-studio run contrast-checker
+# Both strategies: check for hardcoded values (should be zero)
+grep -r "#[0-9a-fA-F]\{3,6\}\|rgba\|rgb(" src/components/ --include="*.tsx"
 ```
 
-**Deliverables:**
+**For Strategy A (Tailwind v4 @theme — most react-vite projects):**
+- [ ] `@theme {}` block in CSS entry file defines all primitive + semantic tokens
+- [ ] No hardcoded hex/rgb values in any component file
+- [ ] `[data-theme="dark"]` overrides defined for all semantic tokens
+- [ ] `@media (prefers-color-scheme: dark)` fallback present
+- [ ] Tailwind utilities map to tokens (e.g. `bg-(--color-surface)`, `text-(--color-muted)`)
+
+**For Strategy B (style-dictionary):**
 - [ ] `tokens/primitive/*.json` — raw values defined
 - [ ] `tokens/semantic/*.json` — intent-based mapping complete
 - [ ] `tokens/component/*.json` — component-scoped tokens defined

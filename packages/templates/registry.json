@@ -159,6 +159,51 @@
       "id": "cloud-architect",
       "name": "Cloud Architect",
       "category": "Architecture & Leadership"
+    },
+    {
+      "id": "vite-specialist",
+      "name": "Vite Specialist",
+      "category": "Frontend (Web)"
+    },
+    {
+      "id": "validator",
+      "name": "Validator",
+      "category": "Quality & Ops"
+    },
+    {
+      "id": "vue-specialist",
+      "name": "Vue.js Specialist",
+      "category": "Frontend (Web)"
+    },
+    {
+      "id": "nuxt-specialist",
+      "name": "Nuxt.js Specialist",
+      "category": "Frontend (Web)"
+    },
+    {
+      "id": "angular-specialist",
+      "name": "Angular Specialist",
+      "category": "Frontend (Web)"
+    },
+    {
+      "id": "nestjs-specialist",
+      "name": "NestJS Specialist",
+      "category": "Backend & API"
+    },
+    {
+      "id": "svelte-specialist",
+      "name": "Svelte / SvelteKit Specialist",
+      "category": "Frontend (Web)"
+    },
+    {
+      "id": "remix-specialist",
+      "name": "Remix Specialist",
+      "category": "Frontend (Web)"
+    },
+    {
+      "id": "astro-specialist",
+      "name": "Astro Specialist",
+      "category": "Frontend (Web)"
     }
   ],
   "profiles": {
@@ -319,6 +364,7 @@
       "scriptRunners": ["node"],
       "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "type-coverage", "verify-all"],
       "agents": [
+        "nestjs-specialist",
         "backend-specialist",
         "api-architect",
         "database-engineer",
@@ -331,6 +377,9 @@
       "skills": [
         "api-design-restful",
         "prisma-orm",
+        "drizzle-orm",
+        "zod-validation",
+        "trpc-patterns",
         "node-express-testing",
         "vitest-unit-tests",
         "solid-principles",
@@ -385,6 +434,7 @@
       "scriptRunners": ["node"],
       "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "bundle-analyzer", "seo-linter", "i18n-linter", "type-coverage", "verify-all"],
       "agents": [
+        "angular-specialist",
         "enterprise-architect",
         "tech-lead",
         "frontend-specialist",
@@ -417,6 +467,8 @@
       "scriptRunners": ["node"],
       "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "bundle-analyzer", "seo-linter", "i18n-linter", "type-coverage", "verify-all"],
       "agents": [
+        "vue-specialist",
+        "nuxt-specialist",
         "frontend-specialist",
         "ui-component-architect",
         "ux-designer",
@@ -429,6 +481,7 @@
       ],
       "skills": [
         "vue-patterns",
+        "nuxt-patterns",
         "api-design-restful",
         "solid-principles",
         "clean-architecture",
@@ -443,6 +496,8 @@
       "scriptRunners": ["node"],
       "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "bundle-analyzer", "seo-linter", "i18n-linter", "type-coverage", "verify-all"],
       "agents": [
+        "vue-specialist",
+        "vite-specialist",
         "frontend-specialist",
         "ui-component-architect",
         "ux-designer",
@@ -451,9 +506,11 @@
       ],
       "skills": [
         "vue-patterns",
+        "tanstack-query",
         "solid-principles",
         "tailwind-design-system",
-        "vitest-unit-tests"
+        "vitest-unit-tests",
+        "vite-build-system"
       ]
     },
     "python-fastapi": {
@@ -588,6 +645,121 @@
         "api-design-restful",
         "owasp-top10",
         "github-actions-ci-cd"
+      ]
+    },
+    "nestjs-api": {
+      "label": "NestJS API",
+      "hint": "Enterprise Node.js with NestJS",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "type-coverage", "verify-all"],
+      "agents": [
+        "nestjs-specialist",
+        "backend-specialist",
+        "api-architect",
+        "database-engineer",
+        "security-engineer",
+        "devops-engineer",
+        "cloud-architect",
+        "qa-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "nestjs-patterns",
+        "api-design-restful",
+        "prisma-orm",
+        "drizzle-orm",
+        "zod-validation",
+        "auth-clerk",
+        "solid-principles",
+        "clean-architecture",
+        "owasp-top10",
+        "vitest-unit-tests",
+        "github-actions-ci-cd"
+      ]
+    },
+    "svelte-kit": {
+      "label": "SvelteKit Full-Stack",
+      "hint": "Full-stack Svelte with SvelteKit",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "bundle-analyzer", "seo-linter", "type-coverage", "verify-all"],
+      "agents": [
+        "svelte-specialist",
+        "frontend-specialist",
+        "ui-component-architect",
+        "backend-specialist",
+        "api-architect",
+        "database-engineer",
+        "qa-engineer",
+        "devops-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "svelte-patterns",
+        "api-design-restful",
+        "prisma-orm",
+        "zod-validation",
+        "solid-principles",
+        "clean-architecture",
+        "vitest-unit-tests",
+        "seo-core-web-vitals",
+        "tailwind-design-system"
+      ]
+    },
+    "remix-fullstack": {
+      "label": "Remix Full-Stack",
+      "hint": "Full-stack React with Remix",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "license-audit", "accessibility-audit", "bundle-analyzer", "seo-linter", "type-coverage", "verify-all"],
+      "agents": [
+        "remix-specialist",
+        "frontend-specialist",
+        "react-performance-guru",
+        "ui-component-architect",
+        "backend-specialist",
+        "database-engineer",
+        "security-engineer",
+        "qa-engineer",
+        "devops-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "react-patterns",
+        "api-design-restful",
+        "prisma-orm",
+        "drizzle-orm",
+        "auth-clerk",
+        "zod-validation",
+        "tailwind-design-system",
+        "solid-principles",
+        "clean-architecture",
+        "vitest-unit-tests",
+        "playwright-e2e",
+        "seo-core-web-vitals"
+      ]
+    },
+    "astro-content": {
+      "label": "Astro (Content Sites)",
+      "hint": "Content-first with Astro islands",
+      "scriptRunners": ["node"],
+      "scriptGates": ["security-scan", "ts-check", "env-validator", "dependency-audit", "accessibility-audit", "bundle-analyzer", "seo-linter", "lighthouse-ci", "type-coverage", "verify-all"],
+      "agents": [
+        "astro-specialist",
+        "frontend-specialist",
+        "ui-component-architect",
+        "seo-specialist",
+        "ux-designer",
+        "accessibility-auditor",
+        "qa-engineer",
+        "debugger"
+      ],
+      "skills": [
+        "react-patterns",
+        "tailwind-design-system",
+        "seo-core-web-vitals",
+        "accessibility-wcag",
+        "responsive-patterns",
+        "solid-principles",
+        "vitest-unit-tests"
       ]
     }
   },
@@ -966,6 +1138,78 @@
       "category": "UX/UI Design",
       "tokenBudget": 550,
       "contributed": true
+    },
+    {
+      "id": "ui-craft",
+      "name": "UI Craft & Visual Patterns",
+      "category": "Frontend & UI",
+      "tokenBudget": 500
+    },
+    {
+      "id": "vite-build-system",
+      "name": "Vite Build System",
+      "category": "Frontend & UI",
+      "tokenBudget": 400
+    },
+    {
+      "id": "drizzle-orm",
+      "name": "Drizzle ORM",
+      "category": "Backend & API",
+      "tokenBudget": 450
+    },
+    {
+      "id": "tanstack-query",
+      "name": "TanStack Query (React Query)",
+      "category": "Frontend & UI",
+      "tokenBudget": 450
+    },
+    {
+      "id": "tanstack-router",
+      "name": "TanStack Router",
+      "category": "Frontend & UI",
+      "tokenBudget": 400
+    },
+    {
+      "id": "trpc-patterns",
+      "name": "tRPC Patterns",
+      "category": "Backend & API",
+      "tokenBudget": 500
+    },
+    {
+      "id": "zod-validation",
+      "name": "Zod Schema Validation",
+      "category": "Architecture",
+      "tokenBudget": 350
+    },
+    {
+      "id": "auth-clerk",
+      "name": "Auth (Clerk)",
+      "category": "Security & Auth",
+      "tokenBudget": 400
+    },
+    {
+      "id": "stripe-integration",
+      "name": "Stripe Integration",
+      "category": "Backend & API",
+      "tokenBudget": 500
+    },
+    {
+      "id": "nestjs-patterns",
+      "name": "NestJS Patterns & Architecture",
+      "category": "Backend & API",
+      "tokenBudget": 900
+    },
+    {
+      "id": "nuxt-patterns",
+      "name": "Nuxt.js Patterns",
+      "category": "Frontend & UI",
+      "tokenBudget": 800
+    },
+    {
+      "id": "svelte-patterns",
+      "name": "Svelte / SvelteKit Patterns",
+      "category": "Frontend & UI",
+      "tokenBudget": 800
     }
   ],
   "slashCommands": [
@@ -986,6 +1230,12 @@
     "/status",
     "/design-system",
     "/motion-audit",
-    "/chromatic"
+    "/chromatic",
+    "/redesign",
+    "/scaffold",
+    "/ship",
+    "/data-model",
+    "/api-design",
+    "/auth-setup"
   ]
 }

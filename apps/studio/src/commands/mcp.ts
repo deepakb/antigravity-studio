@@ -20,6 +20,7 @@ import { composeMcp } from "../core/mcp-composer.js";
 import { readConfig } from "../core/config-manager.js";
 import { detectProject } from "../core/project-detector.js";
 import { logger } from "../ui/logger.js";
+import { IC } from "../ui/icons.js";
 
 const MCP_SERVERS_TEMPLATE_DIR = path.join(TEMPLATES_DIR, ".agent", "mcp", "servers");
 
@@ -132,7 +133,7 @@ export async function mcpListCommand(cwd: string): Promise<void> {
     if (group.length === 0) continue;
     console.log(gold(`\n  ◈ ${tierLabel[tier] ?? tier}`));
     for (const s of group) {
-      const inProfile = s.profiles.includes(profile) ? chalk.green(" ✓ in profile") : "";
+      const inProfile = s.profiles.includes(profile) ? ` ${IC.pass} ${chalk.green("in profile")}` : "";
       console.log(`    ${chalk.cyan(s.id.padEnd(28))} ${s.label}${inProfile}`);
     }
   }

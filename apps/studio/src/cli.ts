@@ -64,7 +64,7 @@ const program = new Command();
 
 program
   .name("studio")
-  .description("Nexus Studio — Enterprise CLI Orchestrator for Developer Teams")
+  .description("Nexus Studio — The AI Dev OS for Every Team")
   .version(version, "-v, --version", "Output the current version")
   .option("--debug", "Enable debug mode (show full stack traces)", false);
 
@@ -141,7 +141,8 @@ program
   .option("--skip-e2e", "Skip slow Playwright end-to-end tests", false)
   .option("--fix", "Auto-fix issues where possible", false)
   .option("--all", "Run validation across all packages in a monorepo", false)
-  .action(wrapAction(async (opts: { skipE2e: boolean; fix: boolean; all: boolean }) => {
+  .option("--json", "Emit structured JSON output for CI pipelines / Slack / Datadog", false)
+  .action(wrapAction(async (opts: { skipE2e: boolean; fix: boolean; all: boolean; json: boolean }) => {
     await validateCommand(process.cwd(), opts);
   }));
 
@@ -215,7 +216,8 @@ program
   .option("--force",  "Pull all updates without prompting", false)
   .option("--quiet",  "Suppress output (for programmatic use)", false)
   .option("--all",    "Monorepo mode — sync all packages under apps/ and packages/", false)
-  .action(wrapAction(async (opts: { check: boolean; force: boolean; quiet: boolean; all: boolean }) => {
+  .option("--deep",   "Deep sync — root instruction files, ghost tracking, profile drift + MCP hints", false)
+  .action(wrapAction(async (opts: { check: boolean; force: boolean; quiet: boolean; all: boolean; deep: boolean }) => {
     const { syncCommand } = await import("./commands/sync.js");
     await syncCommand(process.cwd(), opts);
   }));

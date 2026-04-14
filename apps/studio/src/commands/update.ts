@@ -138,13 +138,13 @@ export async function updateCommand(opts: UpdateOptions) {
 
   // ── Report ──────────────────────────────────────────────────────────────────
   logger.blank();
-  if (upToDate.length)   logger.dim(`✅  ${upToDate.length} file(s) already up to date`);
-  if (toUpdate.length)   logger.info(`🔄  ${chalk.cyan(toUpdate.length.toString())} file(s) will be updated`);
+  if (upToDate.length)   logger.dim(`${IC.pass}  ${upToDate.length} file(s) already up to date`);
+  if (toUpdate.length)   logger.info(`${IC.sync}  ${chalk.cyan(toUpdate.length.toString())} file(s) will be updated`);
   if (customized.length) {
     if (opts.force) {
-      logger.info(`⚠️   ${chalk.yellow(customized.length.toString())} customized file(s) will be overwritten (--force)`);
+      logger.info(`${IC.warn}  ${chalk.yellow(customized.length.toString())} customized file(s) will be overwritten (--force)`);
     } else {
-      logger.info(`🛡️   ${chalk.yellow(customized.length.toString())} customized file(s) protected from overwrite:`);
+      logger.info(`${IC.shield}  ${chalk.yellow(customized.length.toString())} customized file(s) protected from overwrite:`);
       customized.forEach((f) => logger.dim(`     ${f}`));
       logger.dim(`     Use --force to overwrite customized files.`);
     }
